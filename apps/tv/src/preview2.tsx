@@ -9,9 +9,10 @@ import { SAMPLE_ANNOUNCEMENTS } from './fixtures/sampleAnnouncements';
 // Fixed "now" for a deterministic screenshot: 2026-06-22 17:47:13 → Maghrib is next.
 const now = new Date(2026, 5, 22, 17, 47, 13);
 
-// ?panel=qr | announcements | off — lets us preview each side-panel mode.
+// ?panel=qr | announcements | both | off — lets us preview each side-panel mode.
 const param = new URLSearchParams(window.location.search).get('panel');
-const sidePanel: SidePanelMode | 'off' = param === 'qr' ? 'qr' : param === 'off' ? 'off' : 'announcements';
+const sidePanel: SidePanelMode | 'off' =
+  param === 'qr' ? 'qr' : param === 'announcements' ? 'announcements' : param === 'off' ? 'off' : 'both';
 
 createRoot(document.getElementById('preview')!).render(
   <Display

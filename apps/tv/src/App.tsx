@@ -30,7 +30,7 @@ export default function App() {
       data={data}
       now={now}
       masjidName="Your Masjid"
-      sidePanel="announcements"
+      sidePanel="both"
       announcements={announcements}
       announcementIndex={idx}
       stale={stale}

@@ -39,7 +39,7 @@ export function Display({
   data,
   now,
   masjidName = 'Masjid',
-  sidePanel = 'announcements',
+  sidePanel = 'both',
   announcements = [],
   announcementIndex = 0,
   stale = false,

@@ -3,21 +3,20 @@ import { color, font } from '../theme/tokens';
 import { Girih } from './Girih';
 import type { Announcement } from '../fixtures/sampleAnnouncements';
 
-export type SidePanelMode = 'announcements' | 'qr';
+export type SidePanelMode = 'announcements' | 'qr' | 'both';
 
 interface SidePanelProps {
   mode: SidePanelMode;
   announcements?: Announcement[];
   activeIndex?: number;
-  /** For the QR mode: a short call to action. */
+  /** For the QR: a short call to action. */
   donateLabel?: string;
 }
 
 /** A placeholder QR glyph — finder squares + a deterministic fill (real codes arrive in Phase 4). */
-function FauxQR({ size = 260 }: { size?: number }) {
+function FauxQR({ size = 200 }: { size?: number }) {
   const n = 11;
   const cell = size / n;
-  // A 3x3 finder block: outer ring + center dot.
   const inFinder = (x: number, y: number) => x === 0 || x === 2 || y === 0 || y === 2 || (x === 1 && y === 1);
   const cells: ReactElement[] = [];
   for (let y = 0; y < n; y += 1) {
@@ -37,9 +36,22 @@ function FauxQR({ size = 260 }: { size?: number }) {
   );
 }
 
-/** The toggleable side region: an announcements slideshow, or a donate QR. */
+function SectionHeader({ label }: { label: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+      <Girih size={15} color={color.zellige} />
+      <span style={{ font: `700 18px ${font.body}`, letterSpacing: '0.26em', color: color.zellige }}>{label}</span>
+    </div>
+  );
+}
+
+/** The toggleable side region: announcements slideshow, donate QR, or both stacked. */
 export function SidePanel({ mode, announcements = [], activeIndex = 0, donateLabel = 'Scan to donate' }: SidePanelProps) {
+  const showAnnouncements = mode === 'announcements' || mode === 'both';
+  const showQr = mode === 'qr' || mode === 'both';
+  const both = mode === 'both';
   const current = announcements[activeIndex];
+
   return (
     <aside
       style={{
@@ -47,47 +59,59 @@ export function SidePanel({ mode, announcements = [], activeIndex = 0, donateLab
         borderRadius: 28,
         border: `1px solid rgba(242, 233, 213, 0.10)`,
         background: 'linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0))',
-        padding: 44,
+        padding: 40,
         display: 'flex',
         flexDirection: 'column',
+        gap: 26,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
-        <Girih size={16} color={color.zellige} />
-        <span style={{ font: `700 20px ${font.body}`, letterSpacing: '0.26em', color: color.zellige }}>
-          {mode === 'qr' ? 'SUPPORT THE MASJID' : 'ANNOUNCEMENTS'}
-        </span>
-      </div>
-
-      {mode === 'announcements' ? (
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 20 }}>
-          <div style={{ font: `600 48px ${font.display}`, color: color.plaster, lineHeight: 1.1 }}>{current?.title}</div>
-          <div style={{ font: `400 30px ${font.body}`, color: color.plasterDim, lineHeight: 1.45 }}>{current?.body}</div>
-        </div>
-      ) : (
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 30 }}>
-          <div style={{ padding: 20, borderRadius: 20, background: color.plaster }}>
-            <FauxQR size={260} />
+      {showAnnouncements && (
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          <SectionHeader label="ANNOUNCEMENTS" />
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 16 }}>
+            <div style={{ font: `600 ${both ? 40 : 48}px ${font.display}`, color: color.plaster, lineHeight: 1.1 }}>{current?.title}</div>
+            <div style={{ font: `400 ${both ? 26 : 30}px ${font.body}`, color: color.plasterDim, lineHeight: 1.45 }}>{current?.body}</div>
           </div>
-          <span style={{ font: `400 30px ${font.body}`, color: color.plasterDim }}>{donateLabel}</span>
+          {announcements.length > 1 && (
+            <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+              {announcements.map((_, i) => (
+                <span
+                  key={i}
+                  style={{
+                    width: i === activeIndex ? 26 : 9,
+                    height: 9,
+                    borderRadius: 999,
+                    background: i === activeIndex ? color.brass : 'rgba(242, 233, 213, 0.2)',
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      {mode === 'announcements' && announcements.length > 1 && (
-        <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
-          {announcements.map((_, i) => (
-            <span
-              key={i}
-              style={{
-                width: i === activeIndex ? 28 : 10,
-                height: 10,
-                borderRadius: 999,
-                background: i === activeIndex ? color.brass : 'rgba(242, 233, 213, 0.2)',
-              }}
-            />
-          ))}
-        </div>
-      )}
+      {showAnnouncements && showQr && <div style={{ height: 1, background: 'rgba(242, 233, 213, 0.10)' }} />}
+
+      {showQr &&
+        (both ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+            <div style={{ padding: 12, borderRadius: 16, background: color.plaster, flexShrink: 0 }}>
+              <FauxQR size={148} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={{ font: `700 16px ${font.body}`, letterSpacing: '0.2em', color: color.zellige }}>SUPPORT THE MASJID</span>
+              <span style={{ font: `400 26px ${font.body}`, color: color.plaster }}>{donateLabel}</span>
+            </div>
+          </div>
+        ) : (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 28 }}>
+            <SectionHeader label="SUPPORT THE MASJID" />
+            <div style={{ padding: 20, borderRadius: 20, background: color.plaster }}>
+              <FauxQR size={260} />
+            </div>
+            <span style={{ font: `400 30px ${font.body}`, color: color.plasterDim }}>{donateLabel}</span>
+          </div>
+        ))}
     </aside>
   );
 }
