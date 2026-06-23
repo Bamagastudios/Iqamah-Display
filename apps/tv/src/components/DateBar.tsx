@@ -5,26 +5,32 @@ interface DateBarProps {
   masjidName: string;
   gregorian: string;
   hijri: string;
+  /** Backend-uploaded logo (Phase 4). Falls back to a placeholder mark when absent. */
+  logoUrl?: string;
 }
 
 /** Top bar: masjid logo/name (left) + Gregorian & Hijri date (right). */
-export function DateBar({ masjidName, gregorian, hijri }: DateBarProps) {
+export function DateBar({ masjidName, gregorian, hijri, logoUrl }: DateBarProps) {
   return (
     <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-        <div
-          style={{
-            width: 56,
-            height: 56,
-            borderRadius: 14,
-            border: `1.5px solid ${color.brass}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Girih size={30} color={color.brass} />
-        </div>
+        {logoUrl ? (
+          <img src={logoUrl} alt="" style={{ height: 60, maxWidth: 260, objectFit: 'contain' }} />
+        ) : (
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: 14,
+              border: `1.5px solid ${color.brass}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Girih size={30} color={color.brass} />
+          </div>
+        )}
         <span style={{ font: `600 34px ${font.display}`, color: color.plaster }}>{masjidName}</span>
       </div>
       <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 2 }}>

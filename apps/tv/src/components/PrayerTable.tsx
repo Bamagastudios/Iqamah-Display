@@ -9,7 +9,7 @@ interface PrayerTableProps {
   jummahTime?: string;
 }
 
-const GRID: CSSProperties = { display: 'grid', gridTemplateColumns: '1fr 170px 170px', alignItems: 'center' };
+const GRID: CSSProperties = { display: 'grid', gridTemplateColumns: '1fr 150px 150px', alignItems: 'center' };
 const ROW_PAD = '10px 22px';
 const numStyle = (size: number, c: string): CSSProperties => ({
   textAlign: 'right',
@@ -21,7 +21,7 @@ const numStyle = (size: number, c: string): CSSProperties => ({
 /** The prayer board: Fajr · Shurooq · Dhuhr · Asr · Maghrib · Isha, with adhan + iqamah, plus fixed Jummah. */
 export function PrayerTable({ rows, activeKey, jummahTime }: PrayerTableProps) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: '100%', maxWidth: 680 }}>
       <div style={{ ...GRID, padding: '0 22px 2px', font: `700 16px ${font.body}`, letterSpacing: '0.18em', color: color.plasterDim }}>
         <span />
         <span style={{ textAlign: 'right' }}>ADHAN</span>
@@ -38,7 +38,11 @@ export function PrayerTable({ rows, activeKey, jummahTime }: PrayerTableProps) {
               ...GRID,
               padding: ROW_PAD,
               borderRadius: radius.md,
-              background: active ? 'rgba(200, 162, 76, 0.12)' : isSun ? 'transparent' : 'rgba(242, 233, 213, 0.03)',
+              background: active
+                ? `color-mix(in srgb, ${color.brass} 14%, transparent)`
+                : isSun
+                  ? 'transparent'
+                  : `color-mix(in srgb, ${color.plaster} 4%, transparent)`,
               border: active ? `1px solid ${color.brass}` : '1px solid transparent',
             }}
           >
@@ -64,8 +68,8 @@ export function PrayerTable({ rows, activeKey, jummahTime }: PrayerTableProps) {
             ...GRID,
             padding: ROW_PAD,
             borderRadius: radius.md,
-            background: 'rgba(46, 142, 128, 0.10)',
-            border: `1px solid rgba(46, 142, 128, 0.45)`,
+            background: `color-mix(in srgb, ${color.zellige} 12%, transparent)`,
+            border: `1px solid color-mix(in srgb, ${color.zellige} 50%, transparent)`,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>

@@ -5,6 +5,7 @@ import { buildPrayerInstants, countdown, nextIqamah } from '../domain/schedule';
 import { padCountdown } from '../domain/format';
 import { arabicFor, buildDisplayRows, formatGregorian } from '../domain/display';
 import type { Announcement } from '../fixtures/sampleAnnouncements';
+import { AmbientBackground } from './AmbientBackground';
 import { DateBar } from './DateBar';
 import { NextHero } from './NextHero';
 import { PrayerTable } from './PrayerTable';
@@ -14,10 +15,13 @@ interface DisplayProps {
   data: PrayerTimesResponse;
   now: Date;
   masjidName?: string;
+  logoUrl?: string;
   /** 'off' hides the side region entirely (toggleable). */
   sidePanel?: SidePanelMode | 'off';
   announcements?: Announcement[];
   announcementIndex?: number;
+  /** Faint ambient motion; off → static gradient (reduced motion / low power). */
+  ambientMotion?: boolean;
   /** Marker shown when data is cached/sample rather than freshly fetched. */
   stale?: boolean;
 }
@@ -27,8 +31,15 @@ const page: CSSProperties = {
   width: 1920,
   height: 1080,
   overflow: 'hidden',
-  background: `radial-gradient(120% 80% at 50% 116%, rgba(111,90,128,0.18) 0%, rgba(111,90,128,0) 46%), radial-gradient(90% 60% at 50% 110%, rgba(200,162,76,0.14) 0%, rgba(200,162,76,0) 52%), ${color.nightLapis}`,
+  background: color.nightLapis,
   color: color.plaster,
+};
+
+const content: CSSProperties = {
+  position: 'relative',
+  zIndex: 1,
+  width: '100%',
+  height: '100%',
   display: 'flex',
   flexDirection: 'column',
   padding: '40px 64px',
@@ -39,9 +50,11 @@ export function Display({
   data,
   now,
   masjidName = 'Masjid',
+  logoUrl,
   sidePanel = 'both',
   announcements = [],
   announcementIndex = 0,
+  ambientMotion = true,
   stale = false,
 }: DisplayProps) {
   const instants = buildPrayerInstants(data);
@@ -52,31 +65,35 @@ export function Display({
 
   return (
     <div style={page}>
-      <DateBar masjidName={masjidName} gregorian={formatGregorian(data)} hijri={data.hijriLabel} />
+      <AmbientBackground enabled={ambientMotion} />
 
-      <div style={{ flex: 1, display: 'flex', gap: 48, marginTop: 24, minHeight: 0 }}>
-        <div style={{ flex: '1 1 66%', display: 'flex', flexDirection: 'column', gap: 24 }}>
-          {next && cd && (
-            <NextHero
-              name={next.displayName}
-              arabic={arabicFor(next.prayer)}
-              iqamah12={nextPrayer?.iqamah12 ?? ''}
-              countdown={padCountdown(cd)}
-            />
+      <div style={content}>
+        <DateBar masjidName={masjidName} gregorian={formatGregorian(data)} hijri={data.hijriLabel} logoUrl={logoUrl} />
+
+        <div style={{ flex: 1, display: 'flex', gap: 48, marginTop: 22, minHeight: 0 }}>
+          <div style={{ flex: '1 1 64%', display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
+            {next && cd && (
+              <NextHero
+                name={next.displayName}
+                arabic={arabicFor(next.prayer)}
+                iqamah12={nextPrayer?.iqamah12 ?? ''}
+                countdown={padCountdown(cd)}
+              />
+            )}
+            <PrayerTable rows={rows} activeKey={next?.prayer} jummahTime={data.jummah.iqamah12} />
+          </div>
+
+          {sidePanel !== 'off' && (
+            <div style={{ flex: '1 1 36%', minWidth: 0 }}>
+              <SidePanel mode={sidePanel} announcements={announcements} activeIndex={announcementIndex} />
+            </div>
           )}
-          <PrayerTable rows={rows} activeKey={next?.prayer} jummahTime={data.jummah.iqamah12} />
         </div>
 
-        {sidePanel !== 'off' && (
-          <div style={{ flex: '1 1 34%', minWidth: 0 }}>
-            <SidePanel mode={sidePanel} announcements={announcements} activeIndex={announcementIndex} />
-          </div>
-        )}
+        <footer style={{ marginTop: 14, display: 'flex', justifyContent: 'flex-end', font: `400 20px ${font.body}`, color: color.plasterDim, minHeight: 22 }}>
+          {stale && <span>offline · showing last update</span>}
+        </footer>
       </div>
-
-      <footer style={{ marginTop: 18, display: 'flex', justifyContent: 'flex-end', font: `400 20px ${font.body}`, color: color.plasterDim, minHeight: 24 }}>
-        {stale && <span>offline · showing last update</span>}
-      </footer>
     </div>
   );
 }

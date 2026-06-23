@@ -26,7 +26,7 @@ function FauxQR({ size = 200 }: { size?: number }) {
       else if (x >= n - 3 && y < 3) on = inFinder(x - (n - 3), y);
       else if (x < 3 && y >= n - 3) on = inFinder(x, y - (n - 3));
       else on = (x * 7 + y * 5 + x * y * 3) % 3 === 0;
-      if (on) cells.push(<rect key={`${x}-${y}`} x={x * cell} y={y * cell} width={cell} height={cell} fill={color.nightLapis} />);
+      if (on) cells.push(<rect key={`${x}-${y}`} x={x * cell} y={y * cell} width={cell} height={cell} style={{ fill: color.nightLapis }} />);
     }
   }
   return (
@@ -57,7 +57,7 @@ export function SidePanel({ mode, announcements = [], activeIndex = 0, donateLab
       style={{
         height: '100%',
         borderRadius: 28,
-        border: `1px solid rgba(242, 233, 213, 0.10)`,
+        border: `1px solid color-mix(in srgb, ${color.plaster} 10%, transparent)`,
         background: 'linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0))',
         padding: 40,
         display: 'flex',
@@ -81,7 +81,7 @@ export function SidePanel({ mode, announcements = [], activeIndex = 0, donateLab
                     width: i === activeIndex ? 26 : 9,
                     height: 9,
                     borderRadius: 999,
-                    background: i === activeIndex ? color.brass : 'rgba(242, 233, 213, 0.2)',
+                    background: i === activeIndex ? color.brass : `color-mix(in srgb, ${color.plaster} 20%, transparent)`,
                   }}
                 />
               ))}
@@ -90,7 +90,9 @@ export function SidePanel({ mode, announcements = [], activeIndex = 0, donateLab
         </div>
       )}
 
-      {showAnnouncements && showQr && <div style={{ height: 1, background: 'rgba(242, 233, 213, 0.10)' }} />}
+      {showAnnouncements && showQr && (
+        <div style={{ height: 1, background: `color-mix(in srgb, ${color.plaster} 10%, transparent)` }} />
+      )}
 
       {showQr &&
         (both ? (

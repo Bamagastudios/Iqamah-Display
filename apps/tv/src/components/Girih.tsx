@@ -33,9 +33,7 @@ export function Girih({ size = 24, color = palette.brass, opacity = 1, outline =
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ opacity, display: 'block' }} aria-hidden="true">
       <path
         d={d}
-        fill={outline ? 'none' : color}
-        stroke={color}
-        strokeWidth={outline ? 1.25 : 0}
+        style={{ fill: outline ? 'none' : color, stroke: color, strokeWidth: outline ? 1.25 : 0 }}
         strokeLinejoin="round"
       />
     </svg>

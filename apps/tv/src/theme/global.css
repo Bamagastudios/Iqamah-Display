@@ -1,5 +1,20 @@
 :root {
   color-scheme: dark;
+
+  /* Theme variables — overridable at runtime from backend config (see theme/theme.ts).
+     Components read these via the tokens in theme/tokens.ts. */
+  --c-bg: #0e2038; /* background — deep lapis night */
+  --c-deep: #081320; /* deepest layer */
+  --c-fg: #f2e9d5; /* primary text — warm plaster */
+  --c-fg-dim: #ada690; /* muted text */
+  --c-accent: #c8a24c; /* primary accent — brass */
+  --c-accent-glow: #ebcb8b; /* light brass / glow */
+  --c-accent2: #2e8e80; /* secondary accent — tile jade */
+  --c-atmos: #6f5a80; /* atmosphere — dusk sky */
+
+  --f-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --f-body: 'Hanken Grotesk Variable', system-ui, sans-serif;
+  --f-arabic: 'Amiri', 'Hanken Grotesk Variable', serif;
 }
 
 * {
@@ -15,13 +30,33 @@ body,
 
 body {
   margin: 0;
-  background: #0e2038; /* color.nightLapis */
-  color: #f2e9d5; /* color.plaster */
-  font-family: 'Hanken Grotesk Variable', system-ui, sans-serif;
+  background: var(--c-bg);
+  color: var(--c-fg);
+  font-family: var(--f-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
+/* ---- ambient motion (faint, slow; kept alive without distraction) ---- */
+@keyframes mt-drift-a {
+  0% { transform: translate(-2%, -1%) scale(1); }
+  50% { transform: translate(2%, 2%) scale(1.05); }
+  100% { transform: translate(-2%, -1%) scale(1); }
+}
+@keyframes mt-drift-b {
+  0% { transform: translate(2%, 1%) scale(1.04); }
+  50% { transform: translate(-2%, -2%) scale(1); }
+  100% { transform: translate(2%, 1%) scale(1.04); }
+}
+@keyframes mt-breathe {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.8; }
+}
+@keyframes mt-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Calm hall: respect reduced motion and low-power devices — freeze to a static gradient. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

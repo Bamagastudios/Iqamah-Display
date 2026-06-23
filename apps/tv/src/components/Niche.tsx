@@ -32,11 +32,11 @@ export function Niche({ width, height, shoulder, glow = true, children }: NicheP
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={{ position: 'absolute', inset: 0 }} aria-hidden="true">
         <defs>
           <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#16314F" />
-            <stop offset="1" stopColor={color.nightLapis} />
+            <stop offset="0" style={{ stopColor: '#16314F' }} />
+            <stop offset="1" style={{ stopColor: color.nightLapis }} />
           </linearGradient>
         </defs>
-        <path d={nichePath(width, height, sh)} fill={`url(#${id})`} stroke={color.brass} strokeWidth={1.75} />
+        <path d={nichePath(width, height, sh)} fill={`url(#${id})`} style={{ stroke: color.brass, strokeWidth: 1.75 }} />
       </svg>
       {glow && (
         <div

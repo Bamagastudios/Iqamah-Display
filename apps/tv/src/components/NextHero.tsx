@@ -12,7 +12,7 @@ interface NextHeroProps {
 /** The hero: the lit-niche signature naming the next prayer, beside the big live countdown. */
 export function NextHero({ name, arabic, iqamah12, countdown }: NextHeroProps) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 52 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
       <Niche width={236} height={284}>
         <div
           style={{
