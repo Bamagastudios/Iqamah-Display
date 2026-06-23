@@ -1,6 +1,7 @@
 import { useId, type CSSProperties } from 'react';
 import { color, font, radius, space } from '../theme/tokens';
 import { Girih } from './Girih';
+import { nichePath } from './Niche';
 
 export type PrayerCardState = 'idle' | 'next';
 
@@ -18,20 +19,6 @@ const NICHE_SHOULDER = 184;
 
 const IDLE_W = 344;
 const IDLE_H = 360;
-
-/** A pointed (mihrab) arch silhouette: vertical sides up to the shoulders, then a cusped point. */
-function nichePath(w: number, h: number, shoulder: number): string {
-  const cx = w / 2;
-  const apexY = 10;
-  return [
-    `M0 ${h}`,
-    `L0 ${shoulder}`,
-    `C ${w * 0.08} ${shoulder * 0.42} ${w * 0.34} ${apexY + 24} ${cx} ${apexY}`,
-    `C ${w * 0.66} ${apexY + 24} ${w * 0.92} ${shoulder * 0.42} ${w} ${shoulder}`,
-    `L ${w} ${h}`,
-    'Z',
-  ].join(' ');
-}
 
 function TimeColumn({ label, value, accent }: { label: string; value: string; accent: boolean }) {
   return (
