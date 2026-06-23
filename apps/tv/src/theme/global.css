@@ -2,15 +2,15 @@
   color-scheme: dark;
 
   /* Theme variables — overridable at runtime from backend config (see theme/theme.ts).
-     Components read these via the tokens in theme/tokens.ts. */
-  --c-bg: #0e2038; /* background — deep lapis night */
-  --c-deep: #081320; /* deepest layer */
-  --c-fg: #f2e9d5; /* primary text — warm plaster */
-  --c-fg-dim: #ada690; /* muted text */
-  --c-accent: #c8a24c; /* primary accent — brass */
-  --c-accent-glow: #ebcb8b; /* light brass / glow */
-  --c-accent2: #2e8e80; /* secondary accent — tile jade */
-  --c-atmos: #6f5a80; /* atmosphere — dusk sky */
+     Palette: "Calm & modern" — teal leads, soft neutrals, charcoal ground. No gold. */
+  --c-bg: #222831; /* background — charcoal */
+  --c-deep: #171b22; /* deepest layer — vignette / night-dim */
+  --c-fg: #f6f0e4; /* primary text — cream */
+  --c-fg-dim: #b5ad9b; /* muted text — soft sand */
+  --c-accent: #1da0a8; /* primary accent — turquoise (brand) */
+  --c-accent-glow: #57c6cb; /* light turquoise — glow / highlights */
+  --c-accent2: #0c4f54; /* secondary accent — deep teal */
+  --c-atmos: #e3d7c0; /* atmosphere — warm sand */
 
   --f-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
   --f-body: 'Hanken Grotesk Variable', system-ui, sans-serif;

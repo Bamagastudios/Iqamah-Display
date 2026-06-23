@@ -27,7 +27,7 @@ createRoot(document.getElementById('preview')!).render(
   <Display
     data={SAMPLE_RESPONSE}
     now={now}
-    masjidName="Al-Noor Masjid"
+    masjidName="Tajweed Institute"
     sidePanel={sidePanel}
     announcements={SAMPLE_ANNOUNCEMENTS}
     announcementIndex={0}

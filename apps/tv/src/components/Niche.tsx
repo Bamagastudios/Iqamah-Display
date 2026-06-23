@@ -28,11 +28,11 @@ export function Niche({ width, height, shoulder, glow = true, children }: NicheP
   const id = useId();
   const sh = shoulder ?? Math.round(height * 0.39);
   return (
-    <div style={{ position: 'relative', width, height, filter: 'drop-shadow(0 0 64px rgba(200, 162, 76, 0.16))' }}>
+    <div style={{ position: 'relative', width, height, filter: `drop-shadow(0 0 64px color-mix(in srgb, ${color.brass} 18%, transparent))` }}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={{ position: 'absolute', inset: 0 }} aria-hidden="true">
         <defs>
           <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" style={{ stopColor: '#16314F' }} />
+            <stop offset="0" style={{ stopColor: color.zellige }} />
             <stop offset="1" style={{ stopColor: color.nightLapis }} />
           </linearGradient>
         </defs>
@@ -47,7 +47,7 @@ export function Niche({ width, height, shoulder, glow = true, children }: NicheP
             width: width * 0.85,
             height: height * 0.76,
             transform: 'translateX(-50%)',
-            background: 'radial-gradient(circle at 50% 38%, rgba(235, 203, 139, 0.30) 0%, rgba(235, 203, 139, 0.09) 34%, rgba(235, 203, 139, 0) 66%)',
+            background: `radial-gradient(circle at 50% 38%, color-mix(in srgb, ${color.brassGlow} 32%, transparent) 0%, color-mix(in srgb, ${color.brassGlow} 10%, transparent) 36%, transparent 66%)`,
             pointerEvents: 'none',
           }}
         />

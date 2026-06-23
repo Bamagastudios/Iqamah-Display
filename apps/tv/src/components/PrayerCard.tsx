@@ -1,7 +1,7 @@
-import { useId, type CSSProperties } from 'react';
+import { type CSSProperties } from 'react';
 import { color, font, radius, space } from '../theme/tokens';
 import { Girih } from './Girih';
-import { nichePath } from './Niche';
+import { Niche } from './Niche';
 
 export type PrayerCardState = 'idle' | 'next';
 
@@ -97,7 +97,6 @@ function CardContent({ name, arabic, adhan, iqamah, state }: Required<PrayerCard
  *   next — the "Mihrab Light" signature: a pointed-arch niche lit from within.
  */
 export function PrayerCard({ name, arabic, adhan, iqamah, state = 'idle' }: PrayerCardProps) {
-  const gradId = useId();
   const content = <CardContent name={name} arabic={arabic} adhan={adhan} iqamah={iqamah} state={state} />;
 
   if (state !== 'next') {
@@ -106,57 +105,19 @@ export function PrayerCard({ name, arabic, adhan, iqamah, state = 'idle' }: Pray
       width: IDLE_W,
       height: IDLE_H,
       borderRadius: radius.lg,
-      background: '#12273F',
-      border: `1px solid rgba(242, 233, 213, 0.13)`,
+      background: `color-mix(in srgb, ${color.zellige} 20%, ${color.nightLapis})`,
+      border: `1px solid color-mix(in srgb, ${color.plaster} 13%, transparent)`,
     };
     return <div style={idleStyle}>{content}</div>;
   }
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: NICHE_W,
-        height: NICHE_H,
-        filter: 'drop-shadow(0 0 64px rgba(200, 162, 76, 0.16))',
-      }}
-    >
-      <svg
-        width={NICHE_W}
-        height={NICHE_H}
-        viewBox={`0 0 ${NICHE_W} ${NICHE_H}`}
-        style={{ position: 'absolute', inset: 0 }}
-        aria-hidden="true"
-      >
-        <defs>
-          <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#16314F" />
-            <stop offset="1" stopColor={color.nightLapis} />
-          </linearGradient>
-        </defs>
-        <path d={nichePath(NICHE_W, NICHE_H, NICHE_SHOULDER)} fill={`url(#${gradId})`} stroke={color.brass} strokeWidth={1.75} />
-      </svg>
-
-      {/* inner brass glow near the apex — "lit from within" */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 40,
-          left: '50%',
-          width: 340,
-          height: 360,
-          transform: 'translateX(-50%)',
-          background: 'radial-gradient(circle at 50% 38%, rgba(235, 203, 139, 0.32) 0%, rgba(235, 203, 139, 0.10) 34%, rgba(235, 203, 139, 0) 66%)',
-          pointerEvents: 'none',
-        }}
-      />
-
+    <Niche width={NICHE_W} height={NICHE_H} shoulder={NICHE_SHOULDER}>
       {/* faint girih watermark behind the content */}
       <div style={{ position: 'absolute', top: 150, left: '50%', transform: 'translateX(-50%)', pointerEvents: 'none' }}>
         <Girih size={200} color={color.brass} opacity={0.05} outline />
       </div>
-
       {content}
-    </div>
+    </Niche>
   );
 }

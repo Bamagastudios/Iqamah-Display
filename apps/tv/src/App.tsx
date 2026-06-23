@@ -29,7 +29,7 @@ export default function App() {
     <Display
       data={data}
       now={now}
-      masjidName="Your Masjid"
+      masjidName="Tajweed Institute"
       sidePanel="both"
       announcements={announcements}
       announcementIndex={idx}

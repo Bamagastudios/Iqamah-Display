@@ -34,25 +34,25 @@ export interface ThemeConfig {
   ambientMotion: boolean;
 }
 
-/** The design default ("Mihrab Light" / lamplit night). */
+/** The default skin: "Calm & modern" — teal leads, soft neutrals, charcoal ground. */
 export const DEFAULT_THEME: ThemeConfig = {
-  name: 'Mihrab Light',
+  name: 'Calm & modern',
   colors: {
-    bg: '#0E2038',
-    deep: '#081320',
-    fg: '#F2E9D5',
-    fgDim: '#ADA690',
-    accent: '#C8A24C',
-    accentGlow: '#EBCB8B',
-    accent2: '#2E8E80',
-    atmos: '#6F5A80',
+    bg: '#222831',
+    deep: '#171B22',
+    fg: '#F6F0E4',
+    fgDim: '#B5AD9B',
+    accent: '#1DA0A8',
+    accentGlow: '#57C6CB',
+    accent2: '#0C4F54',
+    atmos: '#E3D7C0',
   },
   fonts: {
     display: "'Fraunces Variable', Georgia, 'Times New Roman', serif",
     body: "'Hanken Grotesk Variable', system-ui, sans-serif",
     arabic: "'Amiri', 'Hanken Grotesk Variable', serif",
   },
-  masjidName: 'Your Masjid',
+  masjidName: 'Tajweed Institute',
   sidePanel: 'both',
   ambientMotion: true,
 };

@@ -8,34 +8,34 @@
  * config via theme/theme.ts), each with the design default as a fallback.
  */
 export const color = {
-  nightLapis: 'var(--c-bg, #0E2038)', // base background — deep lapis night
-  inkWell: 'var(--c-deep, #081320)', // deepest layer — vignette / night-dim target
-  plaster: 'var(--c-fg, #F2E9D5)', // primary foreground — warm plaster light
-  plasterDim: 'var(--c-fg-dim, #ADA690)', // muted foreground — labels, the quiet 80%
-  brass: 'var(--c-accent, #C8A24C)', // primary accent — the lit niche, the active prayer
-  brassGlow: 'var(--c-accent-glow, #EBCB8B)', // light brass — inner glow / highlights
-  zellige: 'var(--c-accent2, #2E8E80)', // secondary accent — tile jade, geometry
-  mauveDusk: 'var(--c-atmos, #6F5A80)', // atmosphere — the time-of-day sky band
+  nightLapis: 'var(--c-bg, #222831)', // base background — charcoal
+  inkWell: 'var(--c-deep, #171B22)', // deepest layer — vignette / night-dim target
+  plaster: 'var(--c-fg, #F6F0E4)', // primary foreground — cream
+  plasterDim: 'var(--c-fg-dim, #B5AD9B)', // muted foreground — soft sand
+  brass: 'var(--c-accent, #1DA0A8)', // primary accent — turquoise (brand)
+  brassGlow: 'var(--c-accent-glow, #57C6CB)', // light turquoise — glow / highlights
+  zellige: 'var(--c-accent2, #0C4F54)', // secondary accent — deep teal
+  mauveDusk: 'var(--c-atmos, #E3D7C0)', // atmosphere — warm sand
 } as const;
 
 /** Raw default hex values (for places that need a concrete color, e.g. gradients). */
 export const colorHex = {
-  nightLapis: '#0E2038',
-  inkWell: '#081320',
-  plaster: '#F2E9D5',
-  plasterDim: '#ADA690',
-  brass: '#C8A24C',
-  brassGlow: '#EBCB8B',
-  zellige: '#2E8E80',
-  mauveDusk: '#6F5A80',
+  nightLapis: '#222831',
+  inkWell: '#171B22',
+  plaster: '#F6F0E4',
+  plasterDim: '#B5AD9B',
+  brass: '#1DA0A8',
+  brassGlow: '#57C6CB',
+  zellige: '#0C4F54',
+  mauveDusk: '#E3D7C0',
 } as const;
 
 /** Time-of-day phases — drive the Phase 3 ambient background. */
 export const phase = {
-  dawn: { base: '#13233E', glow: color.mauveDusk },
-  day: { base: '#173247', glow: color.brass },
-  dusk: { base: '#0F2038', glow: color.brass },
-  night: { base: '#0A1828', glow: color.inkWell },
+  dawn: { base: '#243038', glow: color.mauveDusk },
+  day: { base: '#26333B', glow: color.brass },
+  dusk: { base: '#1E2A30', glow: color.brass },
+  night: { base: '#15191F', glow: color.zellige },
 } as const;
 
 export const font = {
