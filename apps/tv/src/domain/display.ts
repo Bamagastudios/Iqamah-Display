@@ -31,33 +31,19 @@ export interface DisplayRow {
 }
 
 /**
- * The rows shown on the board, in order:
- * Fajr · Shurooq (sunrise) · Dhuhr · Asr · Maghrib · Isha.
- * Shurooq is inserted after Fajr and carries a single time (no iqamah).
- * Jummah is rendered separately as a fixed entry (see PrayerTable).
+ * The five daily prayers, in order: Fajr · Dhuhr · Asr · Maghrib · Isha.
+ * Shurooq (sunrise) and the fixed Jummah are shown separately, below the
+ * daily five (see SecondaryTimes), so the core five stay visually together.
  */
 export function buildDisplayRows(resp: PrayerTimesResponse): DisplayRow[] {
-  const rows: DisplayRow[] = [];
-  for (const p of resp.prayers) {
-    rows.push({
-      key: p.name,
-      name: p.displayName ?? p.name,
-      arabic: arabicFor(p.name),
-      adhan: p.adhan12,
-      iqamah: p.iqamah12,
-      kind: 'prayer',
-    });
-    if (p.name.toLowerCase() === 'fajr') {
-      rows.push({
-        key: 'Shurooq',
-        name: 'Shurooq',
-        arabic: arabicFor('shurooq'),
-        single: resp.sunrise12,
-        kind: 'sunrise',
-      });
-    }
-  }
-  return rows;
+  return resp.prayers.map((p) => ({
+    key: p.name,
+    name: p.displayName ?? p.name,
+    arabic: arabicFor(p.name),
+    adhan: p.adhan12,
+    iqamah: p.iqamah12,
+    kind: 'prayer' as const,
+  }));
 }
 
 const MONTHS = [

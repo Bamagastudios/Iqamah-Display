@@ -2,7 +2,7 @@ import { type CSSProperties } from 'react';
 import { color, font } from '../theme/tokens';
 import type { PrayerTimesResponse } from '../api/types';
 import { buildPrayerInstants, countdown, nextIqamah } from '../domain/schedule';
-import { padCountdown } from '../domain/format';
+import { formatClock, padCountdown } from '../domain/format';
 import { arabicFor, buildDisplayRows, formatGregorian } from '../domain/display';
 import type { Slide } from '../domain/content';
 import { AmbientBackground } from './AmbientBackground';
@@ -10,6 +10,7 @@ import { DateBar } from './DateBar';
 import { Girih } from './Girih';
 import { NextHero } from './NextHero';
 import { PrayerTable } from './PrayerTable';
+import { SecondaryTimes } from './SecondaryTimes';
 import { SidePanel, type SidePanelMode } from './SidePanel';
 
 interface DisplayProps {
@@ -72,6 +73,7 @@ export function Display({
   const rows = buildDisplayRows(data);
   const nextPrayer = next ? data.prayers.find((p) => p.name === next.prayer) : undefined;
   const showAlert = alertEnabled && !!alertText;
+  const clock = formatClock(now);
 
   return (
     <div style={page}>
@@ -98,10 +100,10 @@ export function Display({
           </div>
         )}
 
-        <DateBar masjidName={masjidName} gregorian={formatGregorian(data)} hijri={data.hijriLabel} logoUrl={logoUrl} />
+        <DateBar masjidName={masjidName} gregorian={formatGregorian(data)} hijri={data.hijriLabel} clock={clock} logoUrl={logoUrl} />
 
         <div style={{ flex: 1, display: 'flex', gap: 48, marginTop: 22, minHeight: 0 }}>
-          <div style={{ flex: '1 1 64%', display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
+          <div style={{ flex: '1 1 64%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20, minWidth: 0 }}>
             {next && cd && (
               <NextHero
                 name={next.displayName}
@@ -110,7 +112,8 @@ export function Display({
                 countdown={padCountdown(cd)}
               />
             )}
-            <PrayerTable rows={rows} activeKey={next?.prayer} jummahTime={data.jummah.iqamah12} />
+            <PrayerTable rows={rows} activeKey={next?.prayer} />
+            <SecondaryTimes sunriseTime={data.sunrise12} jummahTime={data.jummah.iqamah12} />
           </div>
 
           {sidePanel !== 'off' && (

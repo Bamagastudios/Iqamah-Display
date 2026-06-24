@@ -37,6 +37,16 @@ export default function App() {
     return () => clearTimeout(id);
   }, [idx, slides]);
 
+  // Pick up new code deploys on their own: reload once in the quiet early morning.
+  // (Content & branding from the admin already update live via polling.)
+  useEffect(() => {
+    const id = setInterval(() => {
+      const d = new Date();
+      if (d.getHours() === 3 && d.getMinutes() < 5) window.location.reload();
+    }, 5 * 60 * 1000);
+    return () => clearInterval(id);
+  }, []);
+
   return (
     <Stage>
       <Display
