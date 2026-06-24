@@ -14,6 +14,9 @@ on:
       - '.github/workflows/build-apk.yml'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -53,9 +56,20 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Upload APK
+      - name: Upload APK (artifact)
         uses: actions/upload-artifact@v4
         with:
           name: masjid-tv-apk
           path: apps/tv/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
+      # Publish the APK as a release asset so it has a stable public download URL
+      # (works with the Fire TV "Downloader" app once the repo is public).
+      - name: Publish APK to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: tv
+          name: Masjid TV — latest APK
+          body: Sideloadable Fire TV / Android TV build. Download app-debug.apk below.
+          files: apps/tv/android/app/build/outputs/apk/debug/app-debug.apk
+          fail_on_unmatched_files: true
