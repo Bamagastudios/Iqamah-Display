@@ -3,19 +3,21 @@ import './theme/fonts';
 import './theme/global.css';
 import { useClock } from './hooks/useClock';
 import { useDisplayData } from './hooks/useDisplayData';
+import { useConfig } from './hooks/useConfig';
 import { buildSlides } from './domain/content';
 import { Display } from './components/Display';
 
 const DEFAULT_SLIDE_SECONDS = 12;
 
 /**
- * The TV display. Reads the unified /api/display feed (prayer times + announcements +
- * events), folds the next event into the slideshow, and renders the full board.
- * Branding/theme will come from our own config layer (Supabase) next.
+ * The TV display. Merges two sources: content from the website /api/display feed
+ * (prayer times + announcements + events) and branding/config from Supabase
+ * (applied as the theme). Both degrade to cached/default values, never blanking.
  */
 export default function App() {
   const now = useClock(1000);
   const { feed, stale } = useDisplayData();
+  const cfg = useConfig(); // applies theme as a side effect + returns display props
 
   // Slides only change when the feed or the calendar day changes — keep them stable
   // across the 1s clock tick so the rotation timer isn't reset every second.
@@ -38,10 +40,15 @@ export default function App() {
     <Display
       data={feed.prayerTimes}
       now={now}
-      masjidName="Tajweed Institute"
-      sidePanel="both"
+      masjidName={cfg.masjidName ?? 'Tajweed Institute'}
+      logoUrl={cfg.logoUrl}
+      sidePanel={cfg.sidePanel ?? 'both'}
       slides={slides}
       announcementIndex={idx}
+      donateUrl={cfg.donateUrl}
+      ambientMotion={cfg.ambientMotion ?? true}
+      alertEnabled={cfg.alertEnabled}
+      alertText={cfg.alertText}
       stale={stale}
     />
   );

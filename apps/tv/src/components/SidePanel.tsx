@@ -1,6 +1,7 @@
 import { type ReactElement } from 'react';
 import { color, font } from '../theme/tokens';
 import { Girih } from './Girih';
+import { QrCode } from './QrCode';
 import type { Slide } from '../domain/content';
 
 export type SidePanelMode = 'announcements' | 'qr' | 'both';
@@ -9,6 +10,8 @@ interface SidePanelProps {
   mode: SidePanelMode;
   slides?: Slide[];
   activeIndex?: number;
+  /** Donate link — rendered as a real scannable QR when present. */
+  donateUrl?: string;
   /** For the QR: a short call to action. */
   donateLabel?: string;
 }
@@ -46,7 +49,7 @@ function SectionHeader({ label }: { label: string }) {
 }
 
 /** The toggleable side region: announcements slideshow, donate QR, or both stacked. */
-export function SidePanel({ mode, slides = [], activeIndex = 0, donateLabel = 'Scan to donate' }: SidePanelProps) {
+export function SidePanel({ mode, slides = [], activeIndex = 0, donateUrl, donateLabel = 'Scan to donate' }: SidePanelProps) {
   const showAnnouncements = mode === 'announcements' || mode === 'both';
   const showQr = mode === 'qr' || mode === 'both';
   const both = mode === 'both';
@@ -113,7 +116,7 @@ export function SidePanel({ mode, slides = [], activeIndex = 0, donateLabel = 'S
         (both ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
             <div style={{ padding: 12, borderRadius: 16, background: color.plaster, flexShrink: 0 }}>
-              <FauxQR size={148} />
+              {donateUrl ? <QrCode value={donateUrl} size={148} /> : <FauxQR size={148} />}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <span style={{ font: `700 16px ${font.body}`, letterSpacing: '0.2em', color: color.zellige }}>SUPPORT THE MASJID</span>
@@ -124,7 +127,7 @@ export function SidePanel({ mode, slides = [], activeIndex = 0, donateLabel = 'S
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 28 }}>
             <SectionHeader label="SUPPORT THE MASJID" />
             <div style={{ padding: 20, borderRadius: 20, background: color.plaster }}>
-              <FauxQR size={260} />
+              {donateUrl ? <QrCode value={donateUrl} size={260} /> : <FauxQR size={260} />}
             </div>
             <span style={{ font: `400 30px ${font.body}`, color: color.plasterDim }}>{donateLabel}</span>
           </div>

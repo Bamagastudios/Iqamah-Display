@@ -1,11 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
-const url = import.meta.env.VITE_SUPABASE_URL ?? '';
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? '';
+// Public client credentials for the masjid's Supabase project. The publishable key is
+// RLS-gated and safe to ship in the client; env vars override these defaults.
+const url = import.meta.env.VITE_SUPABASE_URL ?? 'https://vnxaeensfsmhcmgoduvd.supabase.co';
+const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? 'sb_publishable_oQyS_eqBWJBIxRNqc2aLkg_FrhN-G7t';
 
-/** False until you set VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY (.env). */
 export const supabaseConfigured = Boolean(url && anonKey);
-
-// Placeholders keep createClient from throwing before the project is configured;
-// any real call simply fails until the env vars are set.
-export const supabase = createClient(url || 'https://placeholder.supabase.co', anonKey || 'placeholder-anon-key');
+export const supabase = createClient(url, anonKey);

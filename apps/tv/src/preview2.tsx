@@ -33,6 +33,7 @@ createRoot(document.getElementById('preview')!).render(
     sidePanel={sidePanel}
     slides={slides}
     announcementIndex={0}
+    donateUrl="https://tajweedusa.org/donate"
     ambientMotion={ambientMotion}
   />,
 );

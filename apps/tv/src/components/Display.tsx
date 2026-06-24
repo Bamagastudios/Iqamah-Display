@@ -7,6 +7,7 @@ import { arabicFor, buildDisplayRows, formatGregorian } from '../domain/display'
 import type { Slide } from '../domain/content';
 import { AmbientBackground } from './AmbientBackground';
 import { DateBar } from './DateBar';
+import { Girih } from './Girih';
 import { NextHero } from './NextHero';
 import { PrayerTable } from './PrayerTable';
 import { SidePanel, type SidePanelMode } from './SidePanel';
@@ -20,8 +21,13 @@ interface DisplayProps {
   sidePanel?: SidePanelMode | 'off';
   slides?: Slide[];
   announcementIndex?: number;
+  /** Donate link → rendered as a scannable QR in the side panel. */
+  donateUrl?: string;
   /** Faint ambient motion; off → static gradient (reduced motion / low power). */
   ambientMotion?: boolean;
+  /** High-visibility banner (e.g. "Janāzah after Dhuhr today"). */
+  alertEnabled?: boolean;
+  alertText?: string;
   /** Marker shown when data is cached/sample rather than freshly fetched. */
   stale?: boolean;
 }
@@ -54,7 +60,10 @@ export function Display({
   sidePanel = 'both',
   slides = [],
   announcementIndex = 0,
+  donateUrl,
   ambientMotion = true,
+  alertEnabled = false,
+  alertText,
   stale = false,
 }: DisplayProps) {
   const instants = buildPrayerInstants(data);
@@ -62,12 +71,33 @@ export function Display({
   const cd = next ? countdown(next.at, now) : null;
   const rows = buildDisplayRows(data);
   const nextPrayer = next ? data.prayers.find((p) => p.name === next.prayer) : undefined;
+  const showAlert = alertEnabled && !!alertText;
 
   return (
     <div style={page}>
       <AmbientBackground enabled={ambientMotion} />
 
       <div style={content}>
+        {showAlert && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 16,
+              background: color.brass,
+              color: color.nightLapis,
+              padding: '12px 24px',
+              borderRadius: 14,
+              marginBottom: 16,
+              font: `600 30px ${font.body}`,
+            }}
+          >
+            <Girih size={20} color={color.nightLapis} />
+            <span>{alertText}</span>
+          </div>
+        )}
+
         <DateBar masjidName={masjidName} gregorian={formatGregorian(data)} hijri={data.hijriLabel} logoUrl={logoUrl} />
 
         <div style={{ flex: 1, display: 'flex', gap: 48, marginTop: 22, minHeight: 0 }}>
@@ -85,7 +115,7 @@ export function Display({
 
           {sidePanel !== 'off' && (
             <div style={{ flex: '1 1 36%', minWidth: 0 }}>
-              <SidePanel mode={sidePanel} slides={slides} activeIndex={announcementIndex} />
+              <SidePanel mode={sidePanel} slides={slides} activeIndex={announcementIndex} donateUrl={donateUrl} />
             </div>
           )}
         </div>

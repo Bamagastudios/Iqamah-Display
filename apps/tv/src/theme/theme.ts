@@ -73,6 +73,13 @@ export const EMERALD_THEME: ThemeConfig = {
   },
 };
 
+/** Bundled font families → their self-hosted CSS stacks. The admin picks by name. */
+export const FONT_STACKS: Record<string, string> = {
+  Fraunces: "'Fraunces Variable', Georgia, 'Times New Roman', serif",
+  'Hanken Grotesk': "'Hanken Grotesk Variable', system-ui, sans-serif",
+  Amiri: "'Amiri', 'Hanken Grotesk Variable', serif",
+};
+
 const COLOR_VARS: Record<keyof ThemeColors, string> = {
   bg: '--c-bg',
   deep: '--c-deep',
