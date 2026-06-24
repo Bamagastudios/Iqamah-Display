@@ -28,6 +28,12 @@ body,
   height: 100%;
 }
 
+/* TV display fills the screen exactly; the board scales to fit (see Stage). */
+html,
+body {
+  overflow: hidden;
+}
+
 body {
   margin: 0;
   background: var(--c-bg);

@@ -6,6 +6,7 @@ import { useDisplayData } from './hooks/useDisplayData';
 import { useConfig } from './hooks/useConfig';
 import { buildSlides } from './domain/content';
 import { Display } from './components/Display';
+import { Stage } from './components/Stage';
 
 const DEFAULT_SLIDE_SECONDS = 12;
 
@@ -37,19 +38,21 @@ export default function App() {
   }, [idx, slides]);
 
   return (
-    <Display
-      data={feed.prayerTimes}
-      now={now}
-      masjidName={cfg.masjidName ?? 'Tajweed Institute'}
-      logoUrl={cfg.logoUrl}
-      sidePanel={cfg.sidePanel ?? 'both'}
-      slides={slides}
-      announcementIndex={idx}
-      donateUrl={cfg.donateUrl}
-      ambientMotion={cfg.ambientMotion ?? true}
-      alertEnabled={cfg.alertEnabled}
-      alertText={cfg.alertText}
-      stale={stale}
-    />
+    <Stage>
+      <Display
+        data={feed.prayerTimes}
+        now={now}
+        masjidName={cfg.masjidName ?? 'Tajweed Institute'}
+        logoUrl={cfg.logoUrl}
+        sidePanel={cfg.sidePanel ?? 'both'}
+        slides={slides}
+        announcementIndex={idx}
+        donateUrl={cfg.donateUrl}
+        ambientMotion={cfg.ambientMotion ?? true}
+        alertEnabled={cfg.alertEnabled}
+        alertText={cfg.alertText}
+        stale={stale}
+      />
+    </Stage>
   );
 }
