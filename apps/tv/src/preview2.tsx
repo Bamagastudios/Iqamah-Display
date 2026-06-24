@@ -4,8 +4,8 @@ import './theme/global.css';
 import { Display } from './components/Display';
 import type { SidePanelMode } from './components/SidePanel';
 import { applyTheme, EMERALD_THEME } from './theme/theme';
-import { SAMPLE_RESPONSE } from './fixtures';
-import { SAMPLE_ANNOUNCEMENTS } from './fixtures/sampleAnnouncements';
+import { SAMPLE_FEED } from './fixtures';
+import { buildSlides } from './domain/content';
 
 // Fixed "now" for a deterministic screenshot: 2026-06-22 17:47:13 → Maghrib is next.
 const now = new Date(2026, 5, 22, 17, 47, 13);
@@ -23,13 +23,15 @@ if (params.get('theme') === 'emerald') applyTheme(document.documentElement, EMER
 // ?motion=off — preview the reduced-motion / low-power static state.
 const ambientMotion = params.get('motion') !== 'off';
 
+const slides = buildSlides(SAMPLE_FEED, now);
+
 createRoot(document.getElementById('preview')!).render(
   <Display
-    data={SAMPLE_RESPONSE}
+    data={SAMPLE_FEED.prayerTimes}
     now={now}
     masjidName="Tajweed Institute"
     sidePanel={sidePanel}
-    announcements={SAMPLE_ANNOUNCEMENTS}
+    slides={slides}
     announcementIndex={0}
     ambientMotion={ambientMotion}
   />,

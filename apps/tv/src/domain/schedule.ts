@@ -78,7 +78,7 @@ export function buildPrayerInstants(resp: PrayerTimesResponse): PrayerInstant[] 
     const iqamahStr = isFridayDhuhr ? resp.jummah.iqamah : p.iqamah;
     return {
       name: p.name,
-      displayName: isFridayDhuhr ? 'Jummah' : p.displayName,
+      displayName: isFridayDhuhr ? 'Jummah' : (p.displayName ?? p.name),
       adhan: parseLocalDateTime(resp.date, p.adhan),
       iqamah: parseLocalDateTime(resp.date, iqamahStr),
       isJummah: isFridayDhuhr || p.isJummah,

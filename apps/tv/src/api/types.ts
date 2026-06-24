@@ -23,8 +23,8 @@ export interface HijriDate {
 export interface Prayer {
   /** Canonical key, e.g. "Fajr" — stable; use for logic. */
   name: string;
-  /** Label to show, e.g. "Fajr". */
-  displayName: string;
+  /** Label to show, e.g. "Fajr". Optional in the unified feed — defaults to `name`. */
+  displayName?: string;
   /** Adhan time, 24h "HH:mm". */
   adhan: string;
   /** Iqamah time, 24h "HH:mm". */
@@ -57,7 +57,8 @@ export type ApiAlert =
     };
 
 export interface PrayerTimesResponse {
-  location: GeoLocation;
+  /** Present in the standalone prayer-times API; omitted in the unified /api/display feed. */
+  location?: GeoLocation;
   /** "YYYY-MM-DD" — the calendar day these times belong to (anchor to this, not the device TZ). */
   date: string;
   /** "Monday" … */
@@ -67,7 +68,8 @@ export interface PrayerTimesResponse {
   sunrise: string;
   /** Sunrise, 12h "h:mm AM/PM". */
   sunrise12: string;
-  hijri: HijriDate;
+  /** Present in the standalone API; the feed only sends `hijriLabel`. */
+  hijri?: HijriDate;
   /** Ready-to-display, e.g. "8 Muharram 1448 AH". */
   hijriLabel: string;
   /** Ordered Fajr → Dhuhr → Asr → Maghrib → Isha. */

@@ -1,13 +1,13 @@
 import { type ReactElement } from 'react';
 import { color, font } from '../theme/tokens';
 import { Girih } from './Girih';
-import type { Announcement } from '../fixtures/sampleAnnouncements';
+import type { Slide } from '../domain/content';
 
 export type SidePanelMode = 'announcements' | 'qr' | 'both';
 
 interface SidePanelProps {
   mode: SidePanelMode;
-  announcements?: Announcement[];
+  slides?: Slide[];
   activeIndex?: number;
   /** For the QR: a short call to action. */
   donateLabel?: string;
@@ -46,11 +46,11 @@ function SectionHeader({ label }: { label: string }) {
 }
 
 /** The toggleable side region: announcements slideshow, donate QR, or both stacked. */
-export function SidePanel({ mode, announcements = [], activeIndex = 0, donateLabel = 'Scan to donate' }: SidePanelProps) {
+export function SidePanel({ mode, slides = [], activeIndex = 0, donateLabel = 'Scan to donate' }: SidePanelProps) {
   const showAnnouncements = mode === 'announcements' || mode === 'both';
   const showQr = mode === 'qr' || mode === 'both';
   const both = mode === 'both';
-  const current = announcements[activeIndex];
+  const current = slides[activeIndex];
 
   return (
     <aside
@@ -67,14 +67,29 @@ export function SidePanel({ mode, announcements = [], activeIndex = 0, donateLab
     >
       {showAnnouncements && (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          <SectionHeader label="ANNOUNCEMENTS" />
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 16 }}>
-            <div style={{ font: `600 ${both ? 40 : 48}px ${font.display}`, color: color.plaster, lineHeight: 1.1 }}>{current?.title}</div>
-            <div style={{ font: `400 ${both ? 26 : 30}px ${font.body}`, color: color.plasterDim, lineHeight: 1.45 }}>{current?.body}</div>
+          <SectionHeader label={current?.kind === 'event' ? 'UPCOMING EVENT' : 'ANNOUNCEMENTS'} />
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 22 }}>
+            <div style={{ font: `400 ${both ? 38 : 44}px ${font.display}`, color: color.plaster, lineHeight: 1.25 }}>
+              {current?.text}
+            </div>
+            {current?.cta && (
+              <div
+                style={{
+                  alignSelf: 'flex-start',
+                  padding: '8px 18px',
+                  borderRadius: 999,
+                  border: `1px solid color-mix(in srgb, ${color.brass} 55%, transparent)`,
+                  font: `600 22px ${font.body}`,
+                  color: color.brass,
+                }}
+              >
+                {current.cta}
+              </div>
+            )}
           </div>
-          {announcements.length > 1 && (
+          {slides.length > 1 && (
             <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-              {announcements.map((_, i) => (
+              {slides.map((_, i) => (
                 <span
                   key={i}
                   style={{

@@ -41,7 +41,7 @@ export function buildDisplayRows(resp: PrayerTimesResponse): DisplayRow[] {
   for (const p of resp.prayers) {
     rows.push({
       key: p.name,
-      name: p.displayName,
+      name: p.displayName ?? p.name,
       arabic: arabicFor(p.name),
       adhan: p.adhan12,
       iqamah: p.iqamah12,

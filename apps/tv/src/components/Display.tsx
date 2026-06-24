@@ -4,7 +4,7 @@ import type { PrayerTimesResponse } from '../api/types';
 import { buildPrayerInstants, countdown, nextIqamah } from '../domain/schedule';
 import { padCountdown } from '../domain/format';
 import { arabicFor, buildDisplayRows, formatGregorian } from '../domain/display';
-import type { Announcement } from '../fixtures/sampleAnnouncements';
+import type { Slide } from '../domain/content';
 import { AmbientBackground } from './AmbientBackground';
 import { DateBar } from './DateBar';
 import { NextHero } from './NextHero';
@@ -18,7 +18,7 @@ interface DisplayProps {
   logoUrl?: string;
   /** 'off' hides the side region entirely (toggleable). */
   sidePanel?: SidePanelMode | 'off';
-  announcements?: Announcement[];
+  slides?: Slide[];
   announcementIndex?: number;
   /** Faint ambient motion; off → static gradient (reduced motion / low power). */
   ambientMotion?: boolean;
@@ -52,7 +52,7 @@ export function Display({
   masjidName = 'Masjid',
   logoUrl,
   sidePanel = 'both',
-  announcements = [],
+  slides = [],
   announcementIndex = 0,
   ambientMotion = true,
   stale = false,
@@ -85,7 +85,7 @@ export function Display({
 
           {sidePanel !== 'off' && (
             <div style={{ flex: '1 1 36%', minWidth: 0 }}>
-              <SidePanel mode={sidePanel} announcements={announcements} activeIndex={announcementIndex} />
+              <SidePanel mode={sidePanel} slides={slides} activeIndex={announcementIndex} />
             </div>
           )}
         </div>
