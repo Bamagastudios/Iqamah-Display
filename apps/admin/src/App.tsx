@@ -155,8 +155,9 @@ export function Editor({ skipLoad = false }: { skipLoad?: boolean } = {}) {
     setStatus(null);
     const { error } = await supabase
       .from('display_config')
-      .upsert({ ...config, id: 1, updated_at: new Date().toISOString() });
-    setStatus(error ? `Save failed: ${error.message}` : 'Saved — the TV updates within ~30s.');
+      .update({ ...config, updated_at: new Date().toISOString() })
+      .eq('id', 1);
+    setStatus(error ? `Save failed: ${error.message}` : 'Saved — the TV updates within ~15s.');
     setBusy(false);
   }
 
