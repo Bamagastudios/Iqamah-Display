@@ -29,7 +29,7 @@ const ambientMotion = params.get('motion') !== 'off';
 // 30-day schedule can be previewed without the live API.
 const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const sampleIqamah = SAMPLE_FEED.prayerTimes.prayers.map((p) => p.iqamah12);
-const scheduleRows: MonthDay[] = scheduleDates(now, 14).map((date) => {
+const scheduleRows: MonthDay[] = scheduleDates(now, 10).map((date) => {
   const [y, m, d] = date.split('-').map(Number);
   const dow = DOW[new Date(y, m - 1, d).getDay()];
   return { date, day: d, dow, isFriday: dow === 'Fri', iqamah: sampleIqamah };

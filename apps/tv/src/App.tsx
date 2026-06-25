@@ -20,7 +20,7 @@ export default function App() {
   const now = useClock(1000);
   const { feed, stale } = useDisplayData();
   const cfg = useConfig(); // applies theme as a side effect + returns display props
-  const scheduleRows = useSchedule(now, 14); // next 14 days of iqamah times (rolling, cached)
+  const scheduleRows = useSchedule(now, 10); // next 10 days of iqamah times (rolling, cached)
 
   // Slides only change when the feed, the schedule, or the calendar day changes —
   // keep them stable across the 1s clock tick so the rotation timer isn't reset.
