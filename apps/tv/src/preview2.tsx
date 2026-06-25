@@ -8,11 +8,19 @@ import { SAMPLE_FEED } from './fixtures';
 import { buildSlides, buildScheduleSlide } from './domain/content';
 import { scheduleDates, type MonthDay } from './api/monthSchedule';
 
-// Fixed "now" for a deterministic screenshot: 2026-06-22 17:47:13 → Maghrib is next.
-const now = new Date(2026, 5, 22, 17, 47, 13);
-const todayDate = '2026-06-22';
-
 const params = new URLSearchParams(window.location.search);
+
+// Fixed "now" for a deterministic screenshot: 2026-06-22 17:47:13 → Maghrib is next.
+// ?at=adhan|iqamah|inprogress|night jumps to a moment so the always-on states show.
+// (Sample Maghrib: adhān 20:24, iqāmah 20:34; Isha iqāmah 22:00; Fajr adhān 05:05.)
+const MOMENTS: Record<string, Date> = {
+  adhan: new Date(2026, 5, 22, 20, 28, 0),
+  iqamah: new Date(2026, 5, 22, 20, 34, 30),
+  inprogress: new Date(2026, 5, 22, 20, 38, 0),
+  night: new Date(2026, 5, 22, 2, 0, 0),
+};
+const now = MOMENTS[params.get('at') ?? ''] ?? new Date(2026, 5, 22, 17, 47, 13);
+const todayDate = '2026-06-22';
 
 // ?panel=qr | announcements | both | off
 const panel = params.get('panel');

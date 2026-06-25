@@ -18,6 +18,8 @@ create table if not exists display_config (
   side_panel     text default 'both',        -- 'announcements' | 'qr' | 'both' | 'off'
   donate_url     text,                       -- the TV renders a QR from this
   ambient_motion boolean default true,
+  night_dim      boolean default true,       -- auto-dim overnight (Isha → Fajr)
+  prayer_moments boolean default true,       -- full-screen adhān/iqāmah moments
   alert_enabled  boolean default false,      -- high-visibility banner
   alert_text     text,
   updated_at     timestamptz default now(),
@@ -25,6 +27,11 @@ create table if not exists display_config (
 );
 
 insert into display_config (id) values (1) on conflict do nothing;
+
+-- Existing installs (table already created before these settings existed): add the
+-- newer columns in place. Safe to re-run; no-ops once the columns are present.
+alter table display_config add column if not exists night_dim boolean default true;
+alter table display_config add column if not exists prayer_moments boolean default true;
 
 -- Access: the TV reads with the anon key; the admin writes when logged in.
 alter table display_config enable row level security;

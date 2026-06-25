@@ -8,8 +8,9 @@ const BOARD_H = 1080;
  * centered with letterboxing, never scrolling. Fire TV WebViews don't shrink a
  * fixed-size page on their own, so we compute the fit factor ourselves.
  */
-export function Stage({ children }: { children: ReactNode }) {
+export function Stage({ children, offset }: { children: ReactNode; offset?: { dx: number; dy: number } }) {
   const [scale, setScale] = useState(1);
+  const { dx = 0, dy = 0 } = offset ?? {};
 
   useEffect(() => {
     function fit() {
@@ -41,7 +42,16 @@ export function Stage({ children }: { children: ReactNode }) {
         justifyContent: 'center',
       }}
     >
-      <div style={{ width: BOARD_W, height: BOARD_H, flex: 'none', transform: `scale(${scale})`, transformOrigin: 'center center' }}>
+      <div
+        style={{
+          width: BOARD_W,
+          height: BOARD_H,
+          flex: 'none',
+          transform: `scale(${scale}) translate(${dx}px, ${dy}px)`,
+          transformOrigin: 'center center',
+          transition: 'transform 2s ease-in-out',
+        }}
+      >
         {children}
       </div>
     </div>

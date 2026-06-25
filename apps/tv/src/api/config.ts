@@ -15,6 +15,8 @@ export interface DisplayConfigRow {
   ambient_motion: boolean | null;
   alert_enabled: boolean | null;
   alert_text: string | null;
+  night_dim: boolean | null;
+  prayer_moments: boolean | null;
 }
 
 export async function fetchDisplayConfig(): Promise<DisplayConfigRow | null> {

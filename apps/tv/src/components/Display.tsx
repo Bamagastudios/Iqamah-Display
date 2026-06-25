@@ -1,7 +1,8 @@
 import { type CSSProperties } from 'react';
 import { color, font } from '../theme/tokens';
 import type { PrayerTimesResponse } from '../api/types';
-import { buildPrayerInstants, countdown, nextIqamah } from '../domain/schedule';
+import { buildPrayerInstants, countdown, currentState, nextIqamah } from '../domain/schedule';
+import { nightDimLevel } from '../domain/ambient';
 import { formatClock, padCountdown } from '../domain/format';
 import { arabicFor, buildDisplayRows, formatGregorian } from '../domain/display';
 import type { Slide } from '../domain/content';
@@ -10,6 +11,7 @@ import { DateBar } from './DateBar';
 import { Girih } from './Girih';
 import { NextHero } from './NextHero';
 import { PrayerTable } from './PrayerTable';
+import { PrayingOverlay } from './PrayingOverlay';
 import { SecondaryTimes } from './SecondaryTimes';
 import { SidePanel, type SidePanelMode } from './SidePanel';
 
@@ -33,6 +35,10 @@ interface DisplayProps {
   stale?: boolean;
   /** Today's date "YYYY-MM-DD" — highlights today's row in the month schedule. */
   todayDate?: string;
+  /** Auto-dim the board overnight (Isha → Fajr). */
+  nightDim?: boolean;
+  /** Take over the screen with an adhān/iqāmah "now praying" moment. */
+  prayerMoments?: boolean;
 }
 
 const page: CSSProperties = {
@@ -69,6 +75,8 @@ export function Display({
   alertText,
   stale = false,
   todayDate,
+  nightDim = true,
+  prayerMoments = true,
 }: DisplayProps) {
   const instants = buildPrayerInstants(data);
   const next = nextIqamah(instants, now);
@@ -77,6 +85,12 @@ export function Display({
   const nextPrayer = next ? data.prayers.find((p) => p.name === next.prayer) : undefined;
   const showAlert = alertEnabled && !!alertText;
   const clock = formatClock(now);
+
+  // Always-on polish: overnight dim + the adhān/iqāmah "now praying" moment.
+  const dim = nightDim ? nightDimLevel(now, instants) : 0;
+  const state = prayerMoments ? currentState(instants, now) : ({ kind: 'idle' } as const);
+  const activeInst = state.kind !== 'idle' ? instants.find((p) => p.displayName === state.prayer) : undefined;
+  const activeArabic = activeInst ? (activeInst.isJummah ? 'الجُمُعَة' : arabicFor(activeInst.name)) : undefined;
 
   return (
     <div style={page}>
@@ -130,6 +144,11 @@ export function Display({
           {stale && <span>offline · showing last update</span>}
         </footer>
       </div>
+
+      {dim > 0 && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 25, background: '#000', opacity: dim, pointerEvents: 'none', transition: 'opacity 4s linear' }} />
+      )}
+      <PrayingOverlay state={state} arabic={activeArabic} />
     </div>
   );
 }

@@ -31,6 +31,8 @@ export interface DisplayConfig {
   side_panel: SidePanel;
   donate_url: string | null;
   ambient_motion: boolean;
+  night_dim: boolean;
+  prayer_moments: boolean;
   alert_enabled: boolean;
   alert_text: string | null;
   updated_at?: string;
@@ -76,6 +78,8 @@ export const DEFAULT_CONFIG: DisplayConfig = {
   side_panel: 'both',
   donate_url: null,
   ambient_motion: true,
+  night_dim: true,
+  prayer_moments: true,
   alert_enabled: false,
   alert_text: null,
 };

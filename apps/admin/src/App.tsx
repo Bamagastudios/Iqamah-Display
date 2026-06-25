@@ -257,6 +257,16 @@ export function Editor({ skipLoad = false }: { skipLoad?: boolean } = {}) {
           />
         </Field>
         <Toggle label="Ambient background motion" checked={config.ambient_motion} onChange={(v) => set('ambient_motion', v)} />
+        <Toggle
+          label="Auto night-dimming (Isha → Fajr)"
+          checked={config.night_dim}
+          onChange={(v) => set('night_dim', v)}
+        />
+        <Toggle
+          label="“Now praying” moments at adhān & iqāmah"
+          checked={config.prayer_moments}
+          onChange={(v) => set('prayer_moments', v)}
+        />
       </Section>
 
       <Section title="Alert banner">

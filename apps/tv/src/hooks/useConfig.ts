@@ -13,6 +13,8 @@ export interface ResolvedConfig {
   ambientMotion?: boolean;
   alertEnabled?: boolean;
   alertText?: string;
+  nightDim?: boolean;
+  prayerMoments?: boolean;
 }
 
 /**
@@ -39,6 +41,8 @@ export function useConfig(pollMs = POLL_MS): ResolvedConfig {
           ambientMotion: row.ambient_motion ?? undefined,
           alertEnabled: row.alert_enabled ?? undefined,
           alertText: row.alert_text ?? undefined,
+          nightDim: row.night_dim ?? undefined,
+          prayerMoments: row.prayer_moments ?? undefined,
         });
       } catch {
         // offline / not configured — keep the built-in defaults

@@ -6,6 +6,7 @@ import { useDisplayData } from './hooks/useDisplayData';
 import { useConfig } from './hooks/useConfig';
 import { useSchedule } from './hooks/useSchedule';
 import { buildSlides, buildScheduleSlide } from './domain/content';
+import { burnInOffset } from './domain/ambient';
 import { Display } from './components/Display';
 import { Stage } from './components/Stage';
 
@@ -55,7 +56,7 @@ export default function App() {
   }, []);
 
   return (
-    <Stage>
+    <Stage offset={burnInOffset(now)}>
       <Display
         data={feed.prayerTimes}
         now={now}
@@ -70,6 +71,8 @@ export default function App() {
         alertText={cfg.alertText}
         stale={stale}
         todayDate={todayDate}
+        nightDim={cfg.nightDim ?? true}
+        prayerMoments={cfg.prayerMoments ?? true}
       />
     </Stage>
   );
