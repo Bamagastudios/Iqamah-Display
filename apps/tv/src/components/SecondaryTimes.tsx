@@ -43,8 +43,8 @@ export function SecondaryTimes({ sunriseTime, jummahTime }: SecondaryTimesProps)
         <div
           style={{
             ...cell,
-            background: `color-mix(in srgb, ${color.zellige} 14%, transparent)`,
-            border: `1px solid color-mix(in srgb, ${color.zellige} 50%, transparent)`,
+            background: `color-mix(in srgb, ${color.jummah} 14%, transparent)`,
+            border: `1px solid color-mix(in srgb, ${color.jummah} 50%, transparent)`,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
@@ -53,7 +53,7 @@ export function SecondaryTimes({ sunriseTime, jummahTime }: SecondaryTimesProps)
               الجمعة
             </span>
           </div>
-          <span style={time(color.zellige)}>{jummahTime ?? '—'}</span>
+          <span style={time(color.jummah)}>{jummahTime ?? '—'}</span>
         </div>
       </div>
     </div>

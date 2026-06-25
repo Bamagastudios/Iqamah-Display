@@ -26,11 +26,11 @@ export function NextHero({ name, arabic, iqamah12, countdown }: NextHeroProps) {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Girih size={14} color={color.brass} />
-            <span style={{ font: `700 16px ${font.body}`, letterSpacing: '0.3em', color: color.brass }}>NEXT</span>
+            <Girih size={14} color={color.niche} />
+            <span style={{ font: `700 16px ${font.body}`, letterSpacing: '0.3em', color: color.niche }}>NEXT</span>
           </div>
           <span style={{ font: `600 50px ${font.display}`, color: color.plaster, lineHeight: 1 }}>{name}</span>
-          <span dir="rtl" lang="ar" style={{ font: `700 36px ${font.arabic}`, color: color.brassGlow, lineHeight: 1.3 }}>
+          <span dir="rtl" lang="ar" style={{ font: `700 36px ${font.arabic}`, color: color.niche, lineHeight: 1.3 }}>
             {arabic}
           </span>
         </div>

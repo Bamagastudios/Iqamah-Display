@@ -16,6 +16,11 @@ export interface ThemeColors {
   accentGlow: string;
   accent2: string;
   atmos: string;
+  /** Per-region colors, independently editable from the admin. */
+  niche: string; // mihrab niche signature
+  announce: string; // announcements heading
+  donate: string; // "support the masjid" heading
+  jummah: string; // Jummah row
 }
 
 export interface ThemeFonts {
@@ -46,6 +51,10 @@ export const DEFAULT_THEME: ThemeConfig = {
     accentGlow: '#57C6CB',
     accent2: '#0C4F54',
     atmos: '#E3D7C0',
+    niche: '#1DA0A8',
+    announce: '#0C4F54',
+    donate: '#0C4F54',
+    jummah: '#0C4F54',
   },
   fonts: {
     display: "'Fraunces Variable', Georgia, 'Times New Roman', serif",
@@ -70,6 +79,10 @@ export const EMERALD_THEME: ThemeConfig = {
     accentGlow: '#F5DEA0',
     accent2: '#37A98C',
     atmos: '#3C6B5C',
+    niche: '#E0B64A',
+    announce: '#37A98C',
+    donate: '#37A98C',
+    jummah: '#37A98C',
   },
 };
 
@@ -89,6 +102,10 @@ const COLOR_VARS: Record<keyof ThemeColors, string> = {
   accentGlow: '--c-accent-glow',
   accent2: '--c-accent2',
   atmos: '--c-atmos',
+  niche: '--c-niche',
+  announce: '--c-announce',
+  donate: '--c-donate',
+  jummah: '--c-jummah',
 };
 
 const FONT_VARS: Record<keyof ThemeFonts, string> = {

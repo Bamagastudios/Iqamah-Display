@@ -12,6 +12,12 @@
   --c-accent2: #0c4f54; /* secondary accent — deep teal */
   --c-atmos: #e3d7c0; /* atmosphere — warm sand */
 
+  /* Per-region colors — independently editable from the admin (default to the above). */
+  --c-niche: #1da0a8; /* mihrab niche signature */
+  --c-announce: #0c4f54; /* announcements heading */
+  --c-donate: #0c4f54; /* "support the masjid" heading */
+  --c-jummah: #0c4f54; /* Jummah row */
+
   --f-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
   --f-body: 'Hanken Grotesk Variable', system-ui, sans-serif;
   --f-arabic: 'Amiri', 'Hanken Grotesk Variable', serif;

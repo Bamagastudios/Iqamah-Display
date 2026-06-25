@@ -16,6 +16,11 @@ export const color = {
   brassGlow: 'var(--c-accent-glow, #57C6CB)', // light turquoise — glow / highlights
   zellige: 'var(--c-accent2, #0C4F54)', // secondary accent — deep teal
   mauveDusk: 'var(--c-atmos, #E3D7C0)', // atmosphere — warm sand
+  // Per-region colors — independently editable from the admin (default to the above).
+  niche: 'var(--c-niche, #1DA0A8)', // mihrab niche signature
+  announce: 'var(--c-announce, #0C4F54)', // announcements heading
+  donate: 'var(--c-donate, #0C4F54)', // "support the masjid" heading
+  jummah: 'var(--c-jummah, #0C4F54)', // Jummah row
 } as const;
 
 /** Raw default hex values (for places that need a concrete color, e.g. gradients). */

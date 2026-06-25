@@ -123,7 +123,16 @@ export function Editor({ skipLoad = false }: { skipLoad?: boolean } = {}) {
     (async () => {
       try {
         const { data } = await supabase.from('display_config').select('*').eq('id', 1).maybeSingle();
-        if (data) setConfig({ ...DEFAULT_CONFIG, ...(data as DisplayConfig) });
+        if (data) {
+          const row = data as DisplayConfig;
+          setConfig({
+            ...DEFAULT_CONFIG,
+            ...row,
+            // deep-merge so newly added palette/font keys fall back to defaults
+            palette: { ...DEFAULT_CONFIG.palette, ...(row.palette ?? {}) },
+            fonts: { ...DEFAULT_CONFIG.fonts, ...(row.fonts ?? {}) },
+          });
+        }
       } catch {
         // offline / not configured yet — fall back to defaults
       } finally {

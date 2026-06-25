@@ -42,11 +42,11 @@ function FauxQR({ size = 200 }: { size?: number }) {
   );
 }
 
-function SectionHeader({ label }: { label: string }) {
+function SectionHeader({ label, tint = color.announce }: { label: string; tint?: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-      <Girih size={15} color={color.zellige} />
-      <span style={{ font: `700 18px ${font.body}`, letterSpacing: '0.26em', color: color.zellige }}>{label}</span>
+      <Girih size={15} color={tint} />
+      <span style={{ font: `700 18px ${font.body}`, letterSpacing: '0.26em', color: tint }}>{label}</span>
     </div>
   );
 }
@@ -134,13 +134,13 @@ export function SidePanel({ mode, slides = [], activeIndex = 0, donateUrl, donat
               {donateUrl ? <QrCode value={donateUrl} size={148} /> : <FauxQR size={148} />}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <span style={{ font: `700 16px ${font.body}`, letterSpacing: '0.2em', color: color.zellige }}>SUPPORT THE MASJID</span>
+              <span style={{ font: `700 16px ${font.body}`, letterSpacing: '0.2em', color: color.donate }}>SUPPORT THE MASJID</span>
               <span style={{ font: `400 26px ${font.body}`, color: color.plaster }}>{donateLabel}</span>
             </div>
           </div>
         ) : (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 28 }}>
-            <SectionHeader label="SUPPORT THE MASJID" />
+            <SectionHeader label="SUPPORT THE MASJID" tint={color.donate} />
             <div style={{ padding: 20, borderRadius: 20, background: color.plaster }}>
               {donateUrl ? <QrCode value={donateUrl} size={260} /> : <FauxQR size={260} />}
             </div>

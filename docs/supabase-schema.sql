@@ -8,7 +8,8 @@ create table if not exists display_config (
   -- the 8-color palette consumed by the TV theme (see theme/theme.ts)
   palette        jsonb not null default jsonb_build_object(
                    'bg','#222831','deep','#171B22','fg','#F6F0E4','fgDim','#B5AD9B',
-                   'accent','#1DA0A8','accentGlow','#57C6CB','accent2','#0C4F54','atmos','#E3D7C0'),
+                   'accent','#1DA0A8','accentGlow','#57C6CB','accent2','#0C4F54','atmos','#E3D7C0',
+                   'niche','#1DA0A8','announce','#0C4F54','donate','#0C4F54','jummah','#0C4F54'),
   -- font family choices from the bundled set
   fonts          jsonb not null default jsonb_build_object(
                    'display','Fraunces','body','Hanken Grotesk','arabic','Amiri'),

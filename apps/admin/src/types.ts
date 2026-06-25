@@ -7,6 +7,10 @@ export interface Palette {
   accentGlow: string;
   accent2: string;
   atmos: string;
+  niche: string;
+  announce: string;
+  donate: string;
+  jummah: string;
 }
 
 export interface Fonts {
@@ -39,15 +43,15 @@ export const FONT_OPTIONS = {
   arabic: ['Amiri'],
 } as const;
 
+// Only the colors worth editing day-to-day, each tied to one thing on the screen.
 export const PALETTE_FIELDS: Array<{ key: keyof Palette; label: string }> = [
   { key: 'bg', label: 'Background' },
-  { key: 'deep', label: 'Deepest' },
   { key: 'fg', label: 'Text' },
-  { key: 'fgDim', label: 'Muted text' },
-  { key: 'accent', label: 'Accent' },
-  { key: 'accentGlow', label: 'Accent glow' },
-  { key: 'accent2', label: 'Secondary' },
-  { key: 'atmos', label: 'Atmosphere' },
+  { key: 'accent', label: 'Accent — countdown & highlights' },
+  { key: 'niche', label: 'Mihrab niche' },
+  { key: 'announce', label: 'Announcements' },
+  { key: 'donate', label: 'Support / Donate' },
+  { key: 'jummah', label: 'Jummah' },
 ];
 
 export const DEFAULT_CONFIG: DisplayConfig = {
@@ -61,6 +65,10 @@ export const DEFAULT_CONFIG: DisplayConfig = {
     accentGlow: '#57C6CB',
     accent2: '#0C4F54',
     atmos: '#E3D7C0',
+    niche: '#1DA0A8',
+    announce: '#0C4F54',
+    donate: '#0C4F54',
+    jummah: '#0C4F54',
   },
   fonts: { display: 'Fraunces', body: 'Hanken Grotesk', arabic: 'Amiri' },
   logo_url: null,

@@ -22,6 +22,15 @@ const sidePanel: SidePanelMode | 'off' =
 // ?theme=emerald — proves the whole board re-skins from config.
 if (params.get('theme') === 'emerald') applyTheme(document.documentElement, EMERALD_THEME);
 
+// ?demo=split — paint each region a distinct color to prove they're independent.
+if (params.get('demo') === 'split') {
+  const root = document.documentElement.style;
+  root.setProperty('--c-niche', '#E0653A'); // mihrab → orange
+  root.setProperty('--c-announce', '#8B5CF6'); // announcements → purple
+  root.setProperty('--c-donate', '#10B981'); // support → green
+  root.setProperty('--c-jummah', '#EAB308'); // Jummah → amber
+}
+
 // ?motion=off — preview the reduced-motion / low-power static state.
 const ambientMotion = params.get('motion') !== 'off';
 
