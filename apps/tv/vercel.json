@@ -3,5 +3,8 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/api/prayer-times", "destination": "https://tajweed-website-beige.vercel.app/api/prayer-times" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

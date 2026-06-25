@@ -1,6 +1,8 @@
 import type { PrayerTimesResponse } from './types';
 
-const DEFAULT_URL = 'https://tajweed-website-beige.vercel.app/api/prayer-times';
+// Same-origin path; vercel.json proxies it to the masjid site's real API so the
+// browser never sees a cross-site request (no CORS). Override with VITE_PRAYER_API.
+const DEFAULT_URL = '/api/prayer-times';
 
 export function prayerApiUrl(): string {
   return import.meta.env.VITE_PRAYER_API ?? DEFAULT_URL;
