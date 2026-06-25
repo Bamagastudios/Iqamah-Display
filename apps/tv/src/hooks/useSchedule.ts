@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { fetchMonthSchedule, type MonthDay } from '../api/monthSchedule';
+import { fetchSchedule, type MonthDay } from '../api/monthSchedule';
 
-const KEY = 'masjidtv.month.v1';
+const KEY = 'masjidtv.schedule.v1';
 
-function monthKey(d: Date): string {
-  return `${d.getFullYear()}-${d.getMonth()}`;
+function dayStamp(d: Date): string {
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
 function readCache(key: string): MonthDay[] | null {
@@ -27,12 +28,12 @@ function writeCache(key: string, days: MonthDay[]): void {
 }
 
 /**
- * The current month's iqamah schedule. Hydrates from cache instantly, fetches the
- * month in the background, and only refetches when the calendar month changes.
- * Returns [] until data is available (callers skip the schedule when empty).
+ * The next `days` days of iqamah times (a rolling window starting today). Hydrates
+ * from cache instantly, fetches in the background, and refetches when the day rolls
+ * over. Returns [] until data is available (callers skip the schedule when empty).
  */
-export function useMonthSchedule(now: Date): MonthDay[] {
-  const key = monthKey(now);
+export function useSchedule(now: Date, days = 14): MonthDay[] {
+  const key = `${dayStamp(now)}:${days}`;
   const [rows, setRows] = useState<MonthDay[]>(() => readCache(key) ?? []);
 
   useEffect(() => {
@@ -41,11 +42,11 @@ export function useMonthSchedule(now: Date): MonthDay[] {
     const cached = readCache(key);
     if (cached) setRows(cached);
 
-    fetchMonthSchedule(now, ac.signal)
-      .then((days) => {
-        if (!active || days.length === 0) return;
-        setRows(days);
-        writeCache(key, days);
+    fetchSchedule(now, days, ac.signal)
+      .then((result) => {
+        if (!active || result.length === 0) return;
+        setRows(result);
+        writeCache(key, result);
       })
       .catch(() => {
         /* keep cache/empty on failure */

@@ -15,12 +15,14 @@ const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const ORDER = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 const pad = (n: number) => String(n).padStart(2, '0');
 
-/** Every "YYYY-MM-DD" in the month containing `ref`. */
-export function monthDates(ref: Date): string[] {
-  const y = ref.getFullYear();
-  const m = ref.getMonth();
-  const days = new Date(y, m + 1, 0).getDate();
-  return Array.from({ length: days }, (_, i) => `${y}-${pad(m + 1)}-${pad(i + 1)}`);
+/** The next `days` "YYYY-MM-DD" starting from `ref`'s day (a rolling window). */
+export function scheduleDates(ref: Date, days: number): string[] {
+  const base = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate());
+  return Array.from({ length: days }, (_, i) => {
+    const d = new Date(base);
+    d.setDate(base.getDate() + i);
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  });
 }
 
 export function monthDayFromResponse(date: string, pt: PrayerTimesResponse): MonthDay {
@@ -30,14 +32,14 @@ export function monthDayFromResponse(date: string, pt: PrayerTimesResponse): Mon
 }
 
 /**
- * Iqamah times for every day of `ref`'s month — one request per day to the real
- * /api/prayer-times?date=… (proxied same-origin). Resilient: days that fail are
- * dropped rather than failing the whole month.
+ * Iqamah times for the next `days` days from today — one request per day to the
+ * real /api/prayer-times?date=… (proxied same-origin). Resilient: days that fail
+ * are dropped rather than failing the whole window.
  */
-export async function fetchMonthSchedule(ref: Date, signal?: AbortSignal): Promise<MonthDay[]> {
+export async function fetchSchedule(ref: Date, days: number, signal?: AbortSignal): Promise<MonthDay[]> {
   const base = prayerApiUrl();
   const settled = await Promise.allSettled(
-    monthDates(ref).map(async (date) => {
+    scheduleDates(ref, days).map(async (date) => {
       const res = await fetch(`${base}?date=${date}`, { signal, headers: { accept: 'application/json' } });
       if (!res.ok) throw new Error(`prayer-times ${date} -> ${res.status}`);
       return monthDayFromResponse(date, (await res.json()) as PrayerTimesResponse);

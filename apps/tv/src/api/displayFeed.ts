@@ -45,9 +45,9 @@ export interface DisplayFeed {
   prayerTimes: PrayerTimesResponse;
 }
 
-/** Optional unified feed (prayer times + announcements + events in one call). */
-export function displayFeedUrl(): string | undefined {
-  return import.meta.env.VITE_DISPLAY_FEED;
+/** Unified feed (prayer times + announcements + events); proxied same-origin by default. */
+export function displayFeedUrl(): string {
+  return import.meta.env.VITE_DISPLAY_FEED ?? '/api/display';
 }
 
 function isDisplayFeed(value: unknown): value is DisplayFeed {
@@ -68,23 +68,26 @@ function isDisplayFeed(value: unknown): value is DisplayFeed {
  * callers keep last-known-good. Defensively normalizes the array fields.
  */
 export async function fetchDisplayFeed(signal?: AbortSignal): Promise<DisplayFeed> {
-  const unified = displayFeedUrl();
-  if (unified) {
-    const res = await fetch(unified, { signal, headers: { accept: 'application/json' } });
-    if (!res.ok) throw new Error(`Display feed responded ${res.status}`);
-    const json: unknown = await res.json();
-    if (!isDisplayFeed(json)) throw new Error('Display feed returned an unexpected shape');
-    const feed = json as DisplayFeed;
-    if (!Array.isArray(feed.announcements)) feed.announcements = [];
-    if (!Array.isArray(feed.upcomingEvents)) feed.upcomingEvents = [];
-    if (!feed.theme) feed.theme = {};
-    if (!Array.isArray(feed.prayerTimes.alerts)) feed.prayerTimes.alerts = [];
-    return feed;
+  // Prefer the unified feed — times + announcements + events in one call.
+  try {
+    const res = await fetch(displayFeedUrl(), { signal, headers: { accept: 'application/json' } });
+    if (res.ok) {
+      const json: unknown = await res.json();
+      if (isDisplayFeed(json)) {
+        const feed = json as DisplayFeed;
+        if (!Array.isArray(feed.announcements)) feed.announcements = [];
+        if (!Array.isArray(feed.upcomingEvents)) feed.upcomingEvents = [];
+        if (!feed.theme) feed.theme = {};
+        if (!Array.isArray(feed.prayerTimes.alerts)) feed.prayerTimes.alerts = [];
+        return feed;
+      }
+    }
+  } catch (err) {
+    if (signal?.aborted) throw err;
+    // fall through to the standalone prayer-times API
   }
 
-  // Default: the masjid site's real prayer-times API (proxied same-origin).
-  // Announcements/events will come from the admin/unified feed later — empty for
-  // now, so the board shows real times instead of demo placeholder content.
+  // Fallback: the standalone prayer-times API (times only — no announcements/events).
   const prayerTimes = await fetchPrayerTimes(signal);
   return { updatedAt: new Date().toISOString(), theme: {}, announcements: [], upcomingEvents: [], prayerTimes };
 }
