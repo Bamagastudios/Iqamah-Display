@@ -31,10 +31,16 @@ You can open that URL on your **phone or laptop right now** to see the live disp
 
 ## B. The real wall display (sideloaded APK — the product)
 
-This wraps the web app in a thin Android shell (Capacitor) so it launches fullscreen,
-keeps the screen awake, locks to landscape, and can auto-start on boot. **This is the
-next build step (Phase 5).** Because building an `.apk` needs the Android SDK, you have
-two ways to get the file — neither requires you to learn Android:
+This wraps the web app in a thin Android shell (Capacitor). The shell is built, and it:
+
+- launches **fullscreen + immersive** (no status or navigation bars),
+- **keeps the screen awake** (never sleeps), locked to **landscape**,
+- **auto-starts on boot** — including Fire TV's warm "quick boot" after a power cut,
+- **reloads itself when Wi-Fi returns**, so it recovers hands-free if it started before
+  the router was back after an outage.
+
+Because building an `.apk` needs the Android SDK, you have two ways to get the file —
+neither requires you to learn Android:
 
 ### Option B1 — GitHub Actions builds the APK for you (recommended, no local setup)
 We add a CI workflow that compiles a **sideloadable debug APK** on every push and
@@ -54,8 +60,20 @@ npx cap open android             # opens Android Studio → Build → Build APK(
    **Apps from Unknown Sources** (and ADB debugging if you'll use adb).
 2. Install the **Downloader** app, enter the APK's URL, download, install. **or**
    from a computer on the same network: `adb connect <tv-ip>` then `adb install app-debug.apk`.
-3. Launch "Masjid TV". It runs fullscreen and stays awake.
-4. Recommended: disable the Fire TV screensaver (Settings → Display & Sounds → Screensaver).
+3. **Launch "Masjid TV" once.** It runs fullscreen and stays awake. Launching it once
+   also arms the boot receiver, so the display relaunches on its own after a reboot or
+   power cut.
+4. Disable the screensaver: **Settings → Display & Sounds → Screensaver → Start after →
+   Never** (the app already keeps the screen on; this just avoids any Fire TV overlay).
+5. Recommended for hands-free running:
+   - Set the device sleep to **Never** if your Fire TV offers it
+     (**Settings → My Fire TV → Sleep**).
+   - After a power cut, give the TV ~1 minute to boot — it relaunches the display itself.
+
+> **One honest limitation:** Fire TV won't let a non-launcher app *replace* the home
+> screen, so on boot you may glimpse the Fire TV home for a moment before the display
+> comes forward. For a stricter lock (no remote can leave the app), a paid kiosk tool
+> like *Fully Kiosk* or an MDM is needed — overkill for a single masjid screen.
 
 > A debug-signed APK installs fine from Unknown Sources for your own masjid. A
 > Play-signed release is only needed for store distribution (out of scope for v1).
