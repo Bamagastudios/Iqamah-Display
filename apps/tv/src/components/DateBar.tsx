@@ -17,20 +17,20 @@ export function DateBar({ masjidName, gregorian, hijri, clock, logoUrl }: DateBa
     <header style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
         {logoUrl ? (
-          <img src={logoUrl} alt="" style={{ height: 60, maxWidth: 260, objectFit: 'contain' }} />
+          <img src={logoUrl} alt="" style={{ height: 96, maxWidth: 440, objectFit: 'contain' }} />
         ) : (
           <div
             style={{
-              width: 56,
-              height: 56,
-              borderRadius: 14,
-              border: `1.5px solid ${color.brass}`,
+              width: 84,
+              height: 84,
+              borderRadius: 18,
+              border: `2px solid ${color.brass}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Girih size={30} color={color.brass} />
+            <Girih size={46} color={color.brass} />
           </div>
         )}
         <span style={{ font: `600 34px ${font.display}`, color: color.plaster }}>{masjidName}</span>

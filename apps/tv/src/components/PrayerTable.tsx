@@ -20,7 +20,7 @@ const numStyle = (size: number, c: string): CSSProperties => ({
 /** The five daily prayers — Fajr · Dhuhr · Asr · Maghrib · Isha — with adhan + iqamah. */
 export function PrayerTable({ rows, activeKey }: PrayerTableProps) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '100%', maxWidth: 680 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '100%', maxWidth: 860 }}>
       <div style={{ ...GRID, padding: '0 22px 2px', font: `700 16px ${font.body}`, letterSpacing: '0.18em', color: color.plasterDim }}>
         <span />
         <span style={{ textAlign: 'right' }}>ADHAN</span>
