@@ -31,6 +31,8 @@ interface DisplayProps {
   alertText?: string;
   /** Marker shown when data is cached/sample rather than freshly fetched. */
   stale?: boolean;
+  /** Today's date "YYYY-MM-DD" — highlights today's row in the month schedule. */
+  todayDate?: string;
 }
 
 const page: CSSProperties = {
@@ -66,6 +68,7 @@ export function Display({
   alertEnabled = false,
   alertText,
   stale = false,
+  todayDate,
 }: DisplayProps) {
   const instants = buildPrayerInstants(data);
   const next = nextIqamah(instants, now);
@@ -118,7 +121,7 @@ export function Display({
 
           {sidePanel !== 'off' && (
             <div style={{ flex: '1 1 36%', minWidth: 0 }}>
-              <SidePanel mode={sidePanel} slides={slides} activeIndex={announcementIndex} donateUrl={donateUrl} />
+              <SidePanel mode={sidePanel} slides={slides} activeIndex={announcementIndex} donateUrl={donateUrl} todayDate={todayDate} />
             </div>
           )}
         </div>

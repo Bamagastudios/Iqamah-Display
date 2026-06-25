@@ -2,6 +2,7 @@ import { type ReactElement } from 'react';
 import { color, font } from '../theme/tokens';
 import { Girih } from './Girih';
 import { QrCode } from './QrCode';
+import { MonthSchedule } from './MonthSchedule';
 import type { Slide } from '../domain/content';
 
 export type SidePanelMode = 'announcements' | 'qr' | 'both';
@@ -14,6 +15,8 @@ interface SidePanelProps {
   donateUrl?: string;
   /** For the QR: a short call to action. */
   donateLabel?: string;
+  /** "YYYY-MM-DD" of today — highlights today's row in the month schedule. */
+  todayDate?: string;
 }
 
 /** A placeholder QR glyph — finder squares + a deterministic fill (real codes arrive in Phase 4). */
@@ -49,11 +52,11 @@ function SectionHeader({ label }: { label: string }) {
 }
 
 /** The toggleable side region: announcements slideshow, donate QR, or both stacked. */
-export function SidePanel({ mode, slides = [], activeIndex = 0, donateUrl, donateLabel = 'Scan to donate' }: SidePanelProps) {
-  const showAnnouncements = mode === 'announcements' || mode === 'both';
-  const showQr = mode === 'qr' || mode === 'both';
-  const both = mode === 'both';
+export function SidePanel({ mode, slides = [], activeIndex = 0, donateUrl, donateLabel = 'Scan to donate', todayDate }: SidePanelProps) {
   const current = slides[activeIndex];
+  const showAnn = (mode === 'announcements' || mode === 'both') && !!current;
+  const showQr = mode === 'qr' || mode === 'both';
+  const stacked = showAnn && showQr;
 
   return (
     <aside
@@ -68,28 +71,40 @@ export function SidePanel({ mode, slides = [], activeIndex = 0, donateUrl, donat
         gap: 26,
       }}
     >
-      {showAnnouncements && (
+      {showAnn && current && (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          <SectionHeader label={current?.kind === 'event' ? 'UPCOMING EVENT' : 'ANNOUNCEMENTS'} />
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 22 }}>
-            <div style={{ font: `400 ${both ? 38 : 44}px ${font.display}`, color: color.plaster, lineHeight: 1.25 }}>
-              {current?.text}
-            </div>
-            {current?.cta && (
-              <div
-                style={{
-                  alignSelf: 'flex-start',
-                  padding: '8px 18px',
-                  borderRadius: 999,
-                  border: `1px solid color-mix(in srgb, ${color.brass} 55%, transparent)`,
-                  font: `600 22px ${font.body}`,
-                  color: color.brass,
-                }}
-              >
-                {current.cta}
+          <SectionHeader
+            label={
+              current.kind === 'month'
+                ? (current.month?.label ?? 'This Month').toUpperCase()
+                : current.kind === 'event'
+                  ? 'UPCOMING EVENT'
+                  : 'ANNOUNCEMENTS'
+            }
+          />
+          {current.kind === 'month' && current.month ? (
+            <MonthSchedule days={current.month.days} todayDate={todayDate} compact={stacked} />
+          ) : (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 22 }}>
+              <div style={{ font: `400 ${stacked ? 38 : 44}px ${font.display}`, color: color.plaster, lineHeight: 1.25 }}>
+                {current.text}
               </div>
-            )}
-          </div>
+              {current.cta && (
+                <div
+                  style={{
+                    alignSelf: 'flex-start',
+                    padding: '8px 18px',
+                    borderRadius: 999,
+                    border: `1px solid color-mix(in srgb, ${color.brass} 55%, transparent)`,
+                    font: `600 22px ${font.body}`,
+                    color: color.brass,
+                  }}
+                >
+                  {current.cta}
+                </div>
+              )}
+            </div>
+          )}
           {slides.length > 1 && (
             <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
               {slides.map((_, i) => (
@@ -108,12 +123,12 @@ export function SidePanel({ mode, slides = [], activeIndex = 0, donateUrl, donat
         </div>
       )}
 
-      {showAnnouncements && showQr && (
+      {stacked && (
         <div style={{ height: 1, background: `color-mix(in srgb, ${color.plaster} 10%, transparent)` }} />
       )}
 
       {showQr &&
-        (both ? (
+        (stacked ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
             <div style={{ padding: 12, borderRadius: 16, background: color.plaster, flexShrink: 0 }}>
               {donateUrl ? <QrCode value={donateUrl} size={148} /> : <FauxQR size={148} />}

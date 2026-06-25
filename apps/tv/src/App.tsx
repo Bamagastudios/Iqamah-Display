@@ -4,7 +4,8 @@ import './theme/global.css';
 import { useClock } from './hooks/useClock';
 import { useDisplayData } from './hooks/useDisplayData';
 import { useConfig } from './hooks/useConfig';
-import { buildSlides } from './domain/content';
+import { useMonthSchedule } from './hooks/useMonthSchedule';
+import { buildSlides, buildMonthSlides } from './domain/content';
 import { Display } from './components/Display';
 import { Stage } from './components/Stage';
 
@@ -19,11 +20,17 @@ export default function App() {
   const now = useClock(1000);
   const { feed, stale } = useDisplayData();
   const cfg = useConfig(); // applies theme as a side effect + returns display props
+  const monthRows = useMonthSchedule(now); // current month's iqamah schedule (cached)
 
-  // Slides only change when the feed or the calendar day changes — keep them stable
-  // across the 1s clock tick so the rotation timer isn't reset every second.
+  // Slides only change when the feed, the schedule, or the calendar day changes —
+  // keep them stable across the 1s clock tick so the rotation timer isn't reset.
+  const p2 = (n: number) => String(n).padStart(2, '0');
+  const todayDate = `${now.getFullYear()}-${p2(now.getMonth() + 1)}-${p2(now.getDate())}`;
   const dayKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
-  const slides = useMemo(() => buildSlides(feed, now), [feed, dayKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  const slides = useMemo(
+    () => [...buildSlides(feed, now), ...buildMonthSlides(monthRows, now)],
+    [feed, monthRows, dayKey], // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   const [idx, setIdx] = useState(0);
   useEffect(() => {
@@ -62,6 +69,7 @@ export default function App() {
         alertEnabled={cfg.alertEnabled}
         alertText={cfg.alertText}
         stale={stale}
+        todayDate={todayDate}
       />
     </Stage>
   );

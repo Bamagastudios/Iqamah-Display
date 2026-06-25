@@ -1,17 +1,27 @@
 import type { DisplayFeed, FeedEvent, FeedEventSession } from '../api/displayFeed';
+import type { MonthDay } from '../api/monthSchedule';
 
-/** A single rotating side-panel slide (an announcement, or the next event folded in). */
+/** A single rotating side-panel slide (announcement, folded-in event, or a month-schedule page). */
 export interface Slide {
-  text: string;
+  text?: string;
   /** Optional call-to-action label (e.g. "Learn more", "Register"). */
   cta?: string;
   /** Per-slide duration in seconds; null → default cadence. */
   durationSeconds?: number | null;
-  kind: 'announcement' | 'event';
+  kind: 'announcement' | 'event' | 'month';
+  /** Present when kind === 'month' — one page of the month schedule. */
+  month?: { days: MonthDay[]; label: string };
 }
 
 const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MON_FULL = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+/** Days per month-schedule page in the side panel. */
+const MONTH_PAGE = 8;
 
 function shortDate(iso: string): string {
   const [y, m, d] = iso.split('-').map(Number);
@@ -52,5 +62,16 @@ export function buildSlides(feed: DisplayFeed, now: Date): Slide[] {
   }));
   const ne = nextEvent(feed.upcomingEvents, now);
   if (ne) slides.push(eventSlide(ne.event, ne.session));
+  return slides;
+}
+
+/** Split the month's iqamah schedule into paged side-panel slides. */
+export function buildMonthSlides(rows: MonthDay[], now: Date): Slide[] {
+  if (rows.length === 0) return [];
+  const label = `${MON_FULL[now.getMonth()]} ${now.getFullYear()} · Iqāmah`;
+  const slides: Slide[] = [];
+  for (let i = 0; i < rows.length; i += MONTH_PAGE) {
+    slides.push({ kind: 'month', durationSeconds: 10, month: { days: rows.slice(i, i + MONTH_PAGE), label } });
+  }
   return slides;
 }

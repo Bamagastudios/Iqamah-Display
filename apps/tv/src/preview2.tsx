@@ -5,10 +5,12 @@ import { Display } from './components/Display';
 import type { SidePanelMode } from './components/SidePanel';
 import { applyTheme, EMERALD_THEME } from './theme/theme';
 import { SAMPLE_FEED } from './fixtures';
-import { buildSlides } from './domain/content';
+import { buildSlides, buildMonthSlides } from './domain/content';
+import { monthDates, type MonthDay } from './api/monthSchedule';
 
 // Fixed "now" for a deterministic screenshot: 2026-06-22 17:47:13 → Maghrib is next.
 const now = new Date(2026, 5, 22, 17, 47, 13);
+const todayDate = '2026-06-22';
 
 const params = new URLSearchParams(window.location.search);
 
@@ -23,7 +25,22 @@ if (params.get('theme') === 'emerald') applyTheme(document.documentElement, EMER
 // ?motion=off — preview the reduced-motion / low-power static state.
 const ambientMotion = params.get('motion') !== 'off';
 
-const slides = buildSlides(SAMPLE_FEED, now);
+// A sample month (reuses today's sample iqamah times for every day) so the
+// 30-day schedule can be previewed without the live API.
+const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const sampleIqamah = SAMPLE_FEED.prayerTimes.prayers.map((p) => p.iqamah12);
+const monthRows: MonthDay[] = monthDates(now).map((date) => {
+  const [y, m, d] = date.split('-').map(Number);
+  const dow = DOW[new Date(y, m - 1, d).getDay()];
+  return { date, day: d, dow, isFriday: dow === 'Fri', iqamah: sampleIqamah };
+});
+
+const feedSlides = buildSlides(SAMPLE_FEED, now);
+const slides = [...feedSlides, ...buildMonthSlides(monthRows, now)];
+
+// ?slide=month → jump to the month page that contains today (default: announcements).
+const monthStart = feedSlides.length + Math.floor((now.getDate() - 1) / 8);
+const startIndex = params.get('slide') === 'month' ? monthStart : 0;
 
 createRoot(document.getElementById('preview')!).render(
   <Display
@@ -32,8 +49,9 @@ createRoot(document.getElementById('preview')!).render(
     masjidName="Tajweed Institute"
     sidePanel={sidePanel}
     slides={slides}
-    announcementIndex={0}
+    announcementIndex={startIndex}
     donateUrl="https://tajweedusa.org/donate"
     ambientMotion={ambientMotion}
+    todayDate={todayDate}
   />,
 );
