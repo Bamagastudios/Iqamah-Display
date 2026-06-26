@@ -1,0 +1,16 @@
+{
+  "name": "masjid-tv",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Masjid TV — always-on prayer-times + announcements display (monorepo)",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w apps/tv",
+    "build": "npm run build -w apps/tv",
+    "test": "npm run test -w apps/tv",
+    "typecheck": "npm run typecheck -w apps/tv"
+  }
+}

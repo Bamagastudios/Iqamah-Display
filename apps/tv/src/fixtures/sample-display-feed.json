@@ -1,0 +1,52 @@
+{
+  "updatedAt": "2026-06-22T17:30:00.000Z",
+  "theme": { "barColor": null, "barTextColor": null },
+  "announcements": [
+    {
+      "text": "Breakfast at Tajweed coming up — join us this Saturday morning.",
+      "href": "/programs/breakfast",
+      "button": { "label": "Learn more", "href": "/programs/breakfast" },
+      "durationSeconds": null
+    },
+    {
+      "text": "Weekly Qur'an circle after Isha, Tuesdays. All ages welcome.",
+      "href": null,
+      "button": null,
+      "durationSeconds": null
+    },
+    {
+      "text": "Please keep the east driveway clear for emergency access.",
+      "href": null,
+      "button": null,
+      "durationSeconds": null
+    }
+  ],
+  "upcomingEvents": [
+    {
+      "title": "Breakfast at Tajweed",
+      "slug": "breakfast",
+      "summary": "A community breakfast after Fajr.",
+      "status": "open",
+      "registerUrl": "https://tajweedusa.org/programs/breakfast",
+      "location": "Tajweed Institute Masjid",
+      "sessions": [{ "date": "2026-06-27", "time": "8:00–10:00 AM" }]
+    }
+  ],
+  "prayerTimes": {
+    "date": "2026-06-22",
+    "weekday": "Monday",
+    "isFriday": false,
+    "sunrise": "06:23",
+    "sunrise12": "6:23 AM",
+    "hijriLabel": "8 Muharram 1448 AH",
+    "prayers": [
+      { "name": "Fajr", "adhan": "05:05", "iqamah": "05:45", "adhan12": "5:05 AM", "iqamah12": "5:45 AM", "isJummah": false },
+      { "name": "Dhuhr", "adhan": "13:18", "iqamah": "13:45", "adhan12": "1:18 PM", "iqamah12": "1:45 PM", "isJummah": false },
+      { "name": "Asr", "adhan": "17:00", "iqamah": "17:30", "adhan12": "5:00 PM", "iqamah12": "5:30 PM", "isJummah": false },
+      { "name": "Maghrib", "adhan": "20:24", "iqamah": "20:34", "adhan12": "8:24 PM", "iqamah12": "8:34 PM", "isJummah": false },
+      { "name": "Isha", "adhan": "21:45", "iqamah": "22:00", "adhan12": "9:45 PM", "iqamah12": "10:00 PM", "isJummah": false }
+    ],
+    "jummah": { "iqamah": "13:30", "iqamah12": "1:30 PM" },
+    "alerts": []
+  }
+}

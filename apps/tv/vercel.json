@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/api/display", "destination": "https://tajweed-website-beige.vercel.app/api/display" },
+    { "source": "/api/prayer-times", "destination": "https://tajweed-website-beige.vercel.app/api/prayer-times" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

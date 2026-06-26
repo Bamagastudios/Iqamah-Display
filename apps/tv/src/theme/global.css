@@ -1,0 +1,90 @@
+:root {
+  color-scheme: dark;
+
+  /* Theme variables — overridable at runtime from backend config (see theme/theme.ts).
+     Palette: "Calm & modern" — teal leads, soft neutrals, charcoal ground. No gold. */
+  --c-bg: #222831; /* background — charcoal */
+  --c-deep: #171b22; /* deepest layer — vignette / night-dim */
+  --c-fg: #f6f0e4; /* primary text — cream */
+  --c-fg-dim: #b5ad9b; /* muted text — soft sand */
+  --c-accent: #1da0a8; /* primary accent — turquoise (brand) */
+  --c-accent-glow: #57c6cb; /* light turquoise — glow / highlights */
+  --c-accent2: #0c4f54; /* secondary accent — deep teal */
+  --c-atmos: #e3d7c0; /* atmosphere — warm sand */
+
+  /* Per-region colors — independently editable from the admin (default to the above). */
+  --c-niche: #1da0a8; /* mihrab niche signature */
+  --c-announce: #0c4f54; /* announcements heading */
+  --c-donate: #0c4f54; /* "support the masjid" heading */
+  --c-jummah: #0c4f54; /* Jummah row */
+
+  --f-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --f-body: 'Hanken Grotesk Variable', system-ui, sans-serif;
+  --f-arabic: 'Amiri', 'Hanken Grotesk Variable', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root,
+#preview {
+  height: 100%;
+}
+
+/* TV display fills the screen exactly; the board scales to fit (see Stage). */
+html,
+body {
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  background: var(--c-bg);
+  color: var(--c-fg);
+  font-family: var(--f-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- ambient motion (faint, slow; kept alive without distraction) ---- */
+@keyframes mt-drift-a {
+  0% { transform: translate(-2%, -1%) scale(1); }
+  50% { transform: translate(2%, 2%) scale(1.05); }
+  100% { transform: translate(-2%, -1%) scale(1); }
+}
+@keyframes mt-drift-b {
+  0% { transform: translate(2%, 1%) scale(1.04); }
+  50% { transform: translate(-2%, -2%) scale(1); }
+  100% { transform: translate(2%, 1%) scale(1.04); }
+}
+@keyframes mt-breathe {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.8; }
+}
+@keyframes mt-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---- "now praying" moment: gentle take-over ---- */
+@keyframes moment-in {
+  from { opacity: 0; transform: scale(1.04); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes moment-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1.03); }
+}
+
+/* Calm hall: respect reduced motion and low-power devices — freeze to a static gradient. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

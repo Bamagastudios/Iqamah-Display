@@ -1,0 +1,19 @@
+{
+  "location": { "latitude": 29.7189, "longitude": -95.6724 },
+  "date": "2026-06-22",
+  "weekday": "Monday",
+  "isFriday": false,
+  "sunrise": "06:23",
+  "sunrise12": "6:23 AM",
+  "hijri": { "year": 1448, "month": 1, "monthName": "Muharram", "day": 8 },
+  "hijriLabel": "8 Muharram 1448 AH",
+  "prayers": [
+    { "name": "Fajr", "displayName": "Fajr", "adhan": "05:05", "iqamah": "05:45", "adhan12": "5:05 AM", "iqamah12": "5:45 AM", "isJummah": false },
+    { "name": "Dhuhr", "displayName": "Dhuhr", "adhan": "13:18", "iqamah": "13:45", "adhan12": "1:18 PM", "iqamah12": "1:45 PM", "isJummah": false },
+    { "name": "Asr", "displayName": "Asr", "adhan": "17:00", "iqamah": "17:30", "adhan12": "5:00 PM", "iqamah12": "5:30 PM", "isJummah": false },
+    { "name": "Maghrib", "displayName": "Maghrib", "adhan": "20:24", "iqamah": "20:34", "adhan12": "8:24 PM", "iqamah12": "8:34 PM", "isJummah": false },
+    { "name": "Isha", "displayName": "Isha", "adhan": "21:45", "iqamah": "22:00", "adhan12": "9:45 PM", "iqamah12": "10:00 PM", "isJummah": false }
+  ],
+  "jummah": { "iqamah": "13:30", "iqamah12": "1:30 PM" },
+  "alerts": []
+}
