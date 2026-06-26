@@ -10,14 +10,14 @@ export function format12h(d: Date): string {
   return `${h}:${String(m).padStart(2, '0')} ${ampm}`;
 }
 
-/** Live wall-clock for the on-screen clock, split so AM/PM can be styled smaller. */
+/** Live wall-clock for the on-screen clock — hours:minutes only (no seconds), split so AM/PM can be styled smaller. */
 export function formatClock(d: Date): { time: string; ampm: string } {
   let h = d.getHours();
   const ampm = h >= 12 ? 'PM' : 'AM';
   h = h % 12;
   if (h === 0) h = 12;
   const p = (n: number) => String(n).padStart(2, '0');
-  return { time: `${h}:${p(d.getMinutes())}:${p(d.getSeconds())}`, ampm };
+  return { time: `${h}:${p(d.getMinutes())}`, ampm };
 }
 
 /** Zero-padded "HH:MM:SS" for the countdown. */
