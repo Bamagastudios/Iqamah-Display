@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { applyTheme } from '../theme/theme';
 import { fetchDisplayConfig, themeFromRow } from '../api/config';
 import type { SidePanelMode } from '../components/SidePanel';
+import type { ManualTimes } from '../domain/manualTimes';
 
 const POLL_MS = 15_000; // branding changes apply within ~15s
 
@@ -15,6 +16,7 @@ export interface ResolvedConfig {
   alertText?: string;
   nightDim?: boolean;
   prayerMoments?: boolean;
+  manualTimes?: ManualTimes;
 }
 
 /**
@@ -43,6 +45,7 @@ export function useConfig(pollMs = POLL_MS): ResolvedConfig {
           alertText: row.alert_text ?? undefined,
           nightDim: row.night_dim ?? undefined,
           prayerMoments: row.prayer_moments ?? undefined,
+          manualTimes: row.manual_times ?? undefined,
         });
       } catch {
         // offline / not configured — keep the built-in defaults

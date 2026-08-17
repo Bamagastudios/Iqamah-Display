@@ -1,6 +1,7 @@
 import { supabase } from './supabaseClient';
 import type { SidePanelMode } from '../components/SidePanel';
 import type { ThemeColors, ThemeConfig } from '../theme/theme';
+import type { ManualTimes } from '../domain/manualTimes';
 import { DEFAULT_THEME, FONT_STACKS } from '../theme/theme';
 
 /** The display_config row the admin edits and the TV reads (branding only). */
@@ -17,6 +18,7 @@ export interface DisplayConfigRow {
   alert_text: string | null;
   night_dim: boolean | null;
   prayer_moments: boolean | null;
+  manual_times: ManualTimes | null;
 }
 
 export async function fetchDisplayConfig(): Promise<DisplayConfigRow | null> {

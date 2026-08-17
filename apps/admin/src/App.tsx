@@ -5,7 +5,9 @@ import {
   DEFAULT_CONFIG,
   FONT_OPTIONS,
   PALETTE_FIELDS,
+  PRAYER_NAMES,
   type DisplayConfig,
+  type ManualMode,
   type SidePanel,
 } from './types';
 
@@ -128,9 +130,14 @@ export function Editor({ skipLoad = false }: { skipLoad?: boolean } = {}) {
           setConfig({
             ...DEFAULT_CONFIG,
             ...row,
-            // deep-merge so newly added palette/font keys fall back to defaults
+            // deep-merge so newly added palette/font/manual keys fall back to defaults
             palette: { ...DEFAULT_CONFIG.palette, ...(row.palette ?? {}) },
             fonts: { ...DEFAULT_CONFIG.fonts, ...(row.fonts ?? {}) },
+            manual_times: {
+              ...DEFAULT_CONFIG.manual_times,
+              ...(row.manual_times ?? {}),
+              iqamah: { ...DEFAULT_CONFIG.manual_times.iqamah, ...(row.manual_times?.iqamah ?? {}) },
+            },
           });
         }
       } catch {
@@ -267,6 +274,51 @@ export function Editor({ skipLoad = false }: { skipLoad?: boolean } = {}) {
           checked={config.prayer_moments}
           onChange={(v) => set('prayer_moments', v)}
         />
+      </Section>
+
+      <Section title="Prayer times (backup)">
+        <Field label="Manual iqāmah times">
+          <select
+            value={config.manual_times.mode}
+            onChange={(e) => set('manual_times', { ...config.manual_times, mode: e.target.value as ManualMode })}
+            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2"
+          >
+            <option value="off" className="text-ink">Off — always use the live feed</option>
+            <option value="backup" className="text-ink">Backup — use these only if the live feed fails</option>
+            <option value="always" className="text-ink">Always — override the live feed with these</option>
+          </select>
+        </Field>
+        <p className="text-xs leading-relaxed text-sand">
+          Adhān always follows the live feed (it shifts daily). These fixed iqāmah times are your
+          safety net for when the website feed is down or wrong.
+        </p>
+        <div className="space-y-2">
+          {PRAYER_NAMES.map((name) => (
+            <div key={name} className="flex items-center gap-3">
+              <span className="w-24 text-sm text-sand">{name}</span>
+              <input
+                type="time"
+                value={config.manual_times.iqamah[name] ?? ''}
+                onChange={(e) =>
+                  set('manual_times', {
+                    ...config.manual_times,
+                    iqamah: { ...config.manual_times.iqamah, [name]: e.target.value },
+                  })
+                }
+                className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-cream [color-scheme:dark]"
+              />
+            </div>
+          ))}
+          <div className="flex items-center gap-3">
+            <span className="w-24 text-sm text-sand">Jummah</span>
+            <input
+              type="time"
+              value={config.manual_times.jummah ?? ''}
+              onChange={(e) => set('manual_times', { ...config.manual_times, jummah: e.target.value })}
+              className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-cream [color-scheme:dark]"
+            />
+          </div>
+        </div>
       </Section>
 
       <Section title="Alert banner">

@@ -21,6 +21,20 @@ export interface Fonts {
 
 export type SidePanel = 'announcements' | 'qr' | 'both' | 'off';
 
+export type ManualMode = 'off' | 'backup' | 'always';
+
+/** Manual iqāmah backup — fixed iqāmah times the TV falls back to (or always uses). */
+export interface ManualTimes {
+  mode: ManualMode;
+  /** Iqāmah "HH:mm" keyed by prayer name. */
+  iqamah: Record<string, string>;
+  /** Jummah iqāmah "HH:mm". */
+  jummah?: string;
+}
+
+/** The five daily prayers, in order — used to render the manual-times editor. */
+export const PRAYER_NAMES = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as const;
+
 /** The single display_config row the admin edits and the TV reads. */
 export interface DisplayConfig {
   id: number;
@@ -33,6 +47,7 @@ export interface DisplayConfig {
   ambient_motion: boolean;
   night_dim: boolean;
   prayer_moments: boolean;
+  manual_times: ManualTimes;
   alert_enabled: boolean;
   alert_text: string | null;
   updated_at?: string;
@@ -80,6 +95,11 @@ export const DEFAULT_CONFIG: DisplayConfig = {
   ambient_motion: true,
   night_dim: true,
   prayer_moments: true,
+  manual_times: {
+    mode: 'off',
+    iqamah: { Fajr: '06:00', Dhuhr: '14:00', Asr: '17:15', Maghrib: '20:24', Isha: '21:45' },
+    jummah: '13:30',
+  },
   alert_enabled: false,
   alert_text: null,
 };
