@@ -20,11 +20,12 @@ create table if not exists display_config (
   ambient_motion boolean default true,
   night_dim      boolean default true,       -- auto-dim overnight (Isha → Fajr)
   prayer_moments boolean default true,       -- full-screen adhān/iqāmah moments
-  -- manual iqāmah backup: mode off | backup (feed down) | always (override feed)
+  -- manual iqāmah backup: mode off | backup (feed down) | always (override feed).
+  -- Maghrib is excluded — it is always adhān + maghribOffsetMin (its adhān shifts daily).
   manual_times   jsonb not null default jsonb_build_object(
                    'mode','off',
-                   'iqamah', jsonb_build_object(
-                     'Fajr','06:00','Dhuhr','14:00','Asr','17:15','Maghrib','20:24','Isha','21:45'),
+                   'iqamah', jsonb_build_object('Fajr','06:00','Dhuhr','14:00','Asr','17:15','Isha','21:45'),
+                   'maghribOffsetMin', 10,
                    'jummah','13:30'),
   alert_enabled  boolean default false,      -- high-visibility banner
   alert_text     text,
@@ -40,7 +41,8 @@ alter table display_config add column if not exists night_dim boolean default tr
 alter table display_config add column if not exists prayer_moments boolean default true;
 alter table display_config add column if not exists manual_times jsonb not null default jsonb_build_object(
   'mode','off',
-  'iqamah', jsonb_build_object('Fajr','06:00','Dhuhr','14:00','Asr','17:15','Maghrib','20:24','Isha','21:45'),
+  'iqamah', jsonb_build_object('Fajr','06:00','Dhuhr','14:00','Asr','17:15','Isha','21:45'),
+  'maghribOffsetMin', 10,
   'jummah','13:30');
 
 -- Access: the TV reads with the anon key; the admin writes when logged in.

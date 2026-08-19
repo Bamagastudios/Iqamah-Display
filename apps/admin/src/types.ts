@@ -26,10 +26,12 @@ export type ManualMode = 'off' | 'backup' | 'always';
 /** Manual iqāmah backup — fixed iqāmah times the TV falls back to (or always uses). */
 export interface ManualTimes {
   mode: ManualMode;
-  /** Iqāmah "HH:mm" keyed by prayer name. */
+  /** Iqāmah "HH:mm" keyed by prayer name (Maghrib excluded — see maghribOffsetMin). */
   iqamah: Record<string, string>;
   /** Jummah iqāmah "HH:mm". */
   jummah?: string;
+  /** Maghrib iqāmah is always adhān + this many minutes (its adhān shifts daily). */
+  maghribOffsetMin?: number;
 }
 
 /** The five daily prayers, in order — used to render the manual-times editor. */
@@ -97,7 +99,8 @@ export const DEFAULT_CONFIG: DisplayConfig = {
   prayer_moments: true,
   manual_times: {
     mode: 'off',
-    iqamah: { Fajr: '06:00', Dhuhr: '14:00', Asr: '17:15', Maghrib: '20:24', Isha: '21:45' },
+    iqamah: { Fajr: '06:00', Dhuhr: '14:00', Asr: '17:15', Isha: '21:45' },
+    maghribOffsetMin: 10,
     jummah: '13:30',
   },
   alert_enabled: false,

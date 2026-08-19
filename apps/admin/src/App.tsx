@@ -290,25 +290,44 @@ export function Editor({ skipLoad = false }: { skipLoad?: boolean } = {}) {
         </Field>
         <p className="text-xs leading-relaxed text-sand">
           Adhān always follows the live feed (it shifts daily). These fixed iqāmah times are your
-          safety net for when the website feed is down or wrong.
+          safety net for when the website feed is down or wrong. Maghrib is automatic — always its
+          adhān plus the minutes you set (its adhān moves with sunset), so it's never a fixed time.
         </p>
         <div className="space-y-2">
-          {PRAYER_NAMES.map((name) => (
-            <div key={name} className="flex items-center gap-3">
-              <span className="w-24 text-sm text-sand">{name}</span>
-              <input
-                type="time"
-                value={config.manual_times.iqamah[name] ?? ''}
-                onChange={(e) =>
-                  set('manual_times', {
-                    ...config.manual_times,
-                    iqamah: { ...config.manual_times.iqamah, [name]: e.target.value },
-                  })
-                }
-                className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-cream [color-scheme:dark]"
-              />
-            </div>
-          ))}
+          {PRAYER_NAMES.map((name) =>
+            name === 'Maghrib' ? (
+              <div key="Maghrib" className="flex items-center gap-3">
+                <span className="w-24 text-sm text-sand">Maghrib</span>
+                <span className="text-sm text-sand">adhān +</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={60}
+                  value={config.manual_times.maghribOffsetMin ?? 10}
+                  onChange={(e) =>
+                    set('manual_times', { ...config.manual_times, maghribOffsetMin: Number(e.target.value) })
+                  }
+                  className="w-16 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-cream"
+                />
+                <span className="text-sm text-sand">min (auto)</span>
+              </div>
+            ) : (
+              <div key={name} className="flex items-center gap-3">
+                <span className="w-24 text-sm text-sand">{name}</span>
+                <input
+                  type="time"
+                  value={config.manual_times.iqamah[name] ?? ''}
+                  onChange={(e) =>
+                    set('manual_times', {
+                      ...config.manual_times,
+                      iqamah: { ...config.manual_times.iqamah, [name]: e.target.value },
+                    })
+                  }
+                  className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-cream [color-scheme:dark]"
+                />
+              </div>
+            ),
+          )}
           <div className="flex items-center gap-3">
             <span className="w-24 text-sm text-sand">Jummah</span>
             <input
