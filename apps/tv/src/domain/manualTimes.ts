@@ -9,11 +9,16 @@ export type ManualMode = 'off' | 'backup' | 'always';
 
 export interface ManualTimes {
   mode: ManualMode;
-  /** Iqāmah "HH:mm" (24h) keyed by prayer name: Fajr, Dhuhr, Asr, Maghrib, Isha. */
+  /** Iqāmah "HH:mm" (24h) keyed by prayer name. Maghrib is ignored — see maghribOffsetMin. */
   iqamah: Record<string, string>;
   /** Jummah iqāmah "HH:mm". */
   jummah?: string;
+  /** Maghrib iqāmah is always adhān + this many minutes (its adhān shifts daily). */
+  maghribOffsetMin?: number;
 }
+
+/** Default minutes after Maghrib adhān for its iqāmah. */
+export const DEFAULT_MAGHRIB_OFFSET_MIN = 10;
 
 /** "HH:mm" (24h) → "h:mm AM/PM". Returns the input unchanged if it isn't parseable. */
 export function to12h(hhmm: string): string {
@@ -60,6 +65,7 @@ export function applyManualTimes(
   if (!manual || !applies(manual.mode, opts.live)) return base;
 
   const prayers = base.prayers.map((p) => {
+    if (p.name === 'Maghrib') return p; // Maghrib iqāmah is always adhān + offset (enforceMaghribOffset)
     const iq = manual.iqamah?.[p.name];
     return iq ? { ...p, iqamah: iq, iqamah12: to12h(iq) } : p;
   });
@@ -67,4 +73,27 @@ export function applyManualTimes(
   const dateFields = opts.live ? {} : todayFields(opts.now);
 
   return { ...base, ...dateFields, prayers, jummah };
+}
+
+/** Add `min` minutes to an "HH:mm" (24h) time, wrapping within the day. */
+export function addMinutesHHMM(hhmm: string, min: number): string {
+  const m = /^(\d{1,2}):(\d{2})$/.exec((hhmm ?? '').trim());
+  if (!m) return hhmm;
+  const total = ((Number(m[1]) * 60 + Number(m[2]) + min) % 1440 + 1440) % 1440;
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${p(Math.floor(total / 60))}:${p(total % 60)}`;
+}
+
+/**
+ * Maghrib's iqāmah is always its adhān + a fixed offset — its adhān follows sunset and
+ * shifts daily, so a fixed clock time (from the feed or the manual list) would drift.
+ * Applied unconditionally so the rule holds in every mode.
+ */
+export function enforceMaghribOffset(base: PrayerTimesResponse, offsetMin = DEFAULT_MAGHRIB_OFFSET_MIN): PrayerTimesResponse {
+  const prayers = base.prayers.map((p) => {
+    if (p.name !== 'Maghrib' || !p.adhan) return p;
+    const iqamah = addMinutesHHMM(p.adhan, offsetMin);
+    return { ...p, iqamah, iqamah12: to12h(iqamah) };
+  });
+  return { ...base, prayers };
 }

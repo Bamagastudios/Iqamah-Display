@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { applyManualTimes, to12h, type ManualTimes } from './manualTimes';
+import { applyManualTimes, enforceMaghribOffset, addMinutesHHMM, to12h, type ManualTimes } from './manualTimes';
 import type { PrayerTimesResponse } from '../api/types';
 
 function base(): PrayerTimesResponse {
@@ -82,5 +82,38 @@ describe('applyManualTimes', () => {
 
   it('is a no-op when there are no manual times', () => {
     expect(applyManualTimes(base(), undefined, { live: false, now }).prayers[0].iqamah).toBe('06:00');
+  });
+
+  it('never overrides Maghrib from the manual list', () => {
+    const withMaghrib = { ...manual, iqamah: { ...manual.iqamah, Maghrib: '21:00' } };
+    const r = applyManualTimes(base(), withMaghrib, { live: false, now });
+    expect(r.prayers[3].name).toBe('Maghrib');
+    expect(r.prayers[3].iqamah).toBe('20:24'); // base kept — not the manual 21:00
+  });
+});
+
+describe('addMinutesHHMM', () => {
+  it('adds minutes', () => {
+    expect(addMinutesHHMM('20:14', 10)).toBe('20:24');
+    expect(addMinutesHHMM('05:31', 29)).toBe('06:00');
+  });
+  it('wraps past midnight', () => {
+    expect(addMinutesHHMM('23:55', 10)).toBe('00:05');
+  });
+  it('passes through bad input', () => {
+    expect(addMinutesHHMM('nope', 10)).toBe('nope');
+  });
+});
+
+describe('enforceMaghribOffset', () => {
+  it('pins Maghrib iqāmah to adhān + 10 min by default', () => {
+    const r = enforceMaghribOffset(base());
+    expect(r.prayers[3].iqamah).toBe('20:24'); // adhān 20:14 + 10
+    expect(r.prayers[3].iqamah12).toBe('8:24 PM');
+  });
+  it('honors a custom offset and leaves other prayers alone', () => {
+    const r = enforceMaghribOffset(base(), 5);
+    expect(r.prayers[3].iqamah).toBe('20:19');
+    expect(r.prayers[0].iqamah).toBe('06:00'); // Fajr untouched
   });
 });

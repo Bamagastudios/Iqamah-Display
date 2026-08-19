@@ -7,7 +7,7 @@ import { useConfig } from './hooks/useConfig';
 import { useSchedule } from './hooks/useSchedule';
 import { buildSlides, buildScheduleSlide } from './domain/content';
 import { burnInOffset } from './domain/ambient';
-import { applyManualTimes } from './domain/manualTimes';
+import { applyManualTimes, enforceMaghribOffset } from './domain/manualTimes';
 import { Display } from './components/Display';
 import { Stage } from './components/Stage';
 
@@ -24,8 +24,10 @@ export default function App() {
   const cfg = useConfig(); // applies theme as a side effect + returns display props
   const scheduleRows = useSchedule(now, 10); // next 10 days of iqamah times (rolling, cached)
 
-  // Admin's manual iqāmah backup: overlays live times when the feed fails (or always).
-  const prayerTimes = applyManualTimes(feed.prayerTimes, cfg.manualTimes, { live: !stale, now });
+  // Manual iqāmah backup (overlays when the feed fails, or always), then Maghrib is
+  // always pinned to adhān + offset since its adhān shifts daily.
+  const overlaid = applyManualTimes(feed.prayerTimes, cfg.manualTimes, { live: !stale, now });
+  const prayerTimes = enforceMaghribOffset(overlaid, cfg.manualTimes?.maghribOffsetMin);
 
   // Slides only change when the feed, the schedule, or the calendar day changes —
   // keep them stable across the 1s clock tick so the rotation timer isn't reset.
