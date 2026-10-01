@@ -5,9 +5,11 @@ import { useClock } from './hooks/useClock';
 import { useDisplayData } from './hooks/useDisplayData';
 import { useConfig } from './hooks/useConfig';
 import { useSchedule } from './hooks/useSchedule';
+import { useDatoIqamah } from './hooks/useDatoIqamah';
+import { monthDayFromResponse } from './api/monthSchedule';
 import { buildSlides, buildScheduleSlide } from './domain/content';
 import { burnInOffset } from './domain/ambient';
-import { applyManualTimes, enforceMaghribOffset } from './domain/manualTimes';
+import { resolveIqamah } from './domain/manualTimes';
 import { Display } from './components/Display';
 import { Stage } from './components/Stage';
 
@@ -22,12 +24,34 @@ export default function App() {
   const now = useClock(1000);
   const { feed, stale } = useDisplayData();
   const cfg = useConfig(); // applies theme as a side effect + returns display props
-  const scheduleRows = useSchedule(now, 10); // next 10 days of iqamah times (rolling, cached)
+  const datoIqamah = useDatoIqamah(); // iqāmah from DatoCMS — the source tajweedusa.org shows
+  const scheduleDays = useSchedule(now, 10); // next 10 days of prayer times (rolling, cached, raw)
 
-  // Manual iqāmah backup (overlays when the feed fails, or always), then Maghrib is
-  // always pinned to adhān + offset since its adhān shifts daily.
-  const overlaid = applyManualTimes(feed.prayerTimes, cfg.manualTimes, { live: !stale, now });
-  const prayerTimes = enforceMaghribOffset(overlaid, cfg.manualTimes?.maghribOffsetMin);
+  // Iqāmah rules, shared by the board and the schedule: manual backup → DatoCMS → Maghrib
+  // pinned to adhān + offset (its adhān shifts daily). Adhān/sunrise/date stay from the feed.
+  const maghribOffsetMin = cfg.manualTimes?.maghribOffsetMin;
+  const prayerTimes = resolveIqamah(feed.prayerTimes, {
+    manual: cfg.manualTimes,
+    dato: datoIqamah,
+    maghribOffsetMin,
+    live: !stale,
+    now,
+  });
+
+  // The upcoming-days schedule runs through the same rules so it can't contradict the board.
+  // Keyed on content (the config arrives as a new object every poll) so identical data never
+  // resets the slide rotation timer. `now` is unused for live days, so it's not a dependency.
+  const manualKey = JSON.stringify(cfg.manualTimes ?? null);
+  const scheduleRows = useMemo(
+    () =>
+      scheduleDays.map((d) =>
+        monthDayFromResponse(
+          d.date,
+          resolveIqamah(d.pt, { manual: cfg.manualTimes, dato: datoIqamah, maghribOffsetMin, live: true, now }),
+        ),
+      ),
+    [scheduleDays, manualKey, datoIqamah], // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   // Slides only change when the feed, the schedule, or the calendar day changes —
   // keep them stable across the 1s clock tick so the rotation timer isn't reset.
