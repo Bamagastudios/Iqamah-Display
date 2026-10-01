@@ -22,18 +22,24 @@ export interface ResolvedConfig {
 /**
  * Reads branding/config from Supabase, applies the theme (colors + fonts) to the
  * document, and returns the display props. On any failure it keeps the built-in
- * defaults — the TV never breaks if the config layer is unreachable.
+ * defaults — the TV never breaks if the config layer is unreachable. Polls, but only
+ * re-themes and re-renders when the row actually changed (an admin save), so a steady
+ * config never touches the screen.
  */
 export function useConfig(pollMs = POLL_MS): ResolvedConfig {
   const [cfg, setCfg] = useState<ResolvedConfig>({});
 
   useEffect(() => {
     let mounted = true;
+    let applied = ''; // serialized row last applied
 
     async function load() {
       try {
         const row = await fetchDisplayConfig();
         if (!row || !mounted) return;
+        const key = JSON.stringify(row);
+        if (key === applied) return; // unchanged — leave the screen alone
+        applied = key;
         applyTheme(document.documentElement, themeFromRow(row));
         setCfg({
           masjidName: row.masjid_name ?? undefined,
