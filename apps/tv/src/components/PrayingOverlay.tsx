@@ -62,7 +62,8 @@ export function PrayingOverlay({ state, arabic }: { state: PrayerState; arabic?:
           height: 760,
           borderRadius: '50%',
           background: `radial-gradient(circle, color-mix(in srgb, ${color.niche} 18%, transparent) 0%, transparent 62%)`,
-          animation: 'moment-pulse 4s ease-in-out infinite',
+          // a steady glow — a pulse here would redraw the screen for the whole adhān window
+          opacity: 0.8,
           pointerEvents: 'none',
         }}
       />

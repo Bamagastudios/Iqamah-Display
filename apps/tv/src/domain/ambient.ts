@@ -2,11 +2,12 @@
  * "Always-on" display helpers — pure and deterministic so they unit-test cleanly.
  *
  *  - nightDimLevel: how dark to make the board overnight (the masjid is typically
- *    empty between Isha and Fajr), eased in after Isha and out before Fajr.
+ *    empty between Isha and Fajr), eased in after Isha and out before Fajr, a step a minute.
  *  - burnInOffset: a few-pixel shift of the whole board once an hour, to keep the static
  *    layout from etching into a 24/7 panel (LCD image-persistence / OLED burn-in).
+ *  - glowShift: where the faint background glows sit this hour (ambient motion on).
  *
- * Both take an explicit `now` (and prayer instants) — no Date.now(), no module state.
+ * All take an explicit `now` (and prayer instants) — no Date.now(), no module state.
  */
 
 import type { PrayerInstant } from './schedule';
@@ -24,8 +25,9 @@ export interface NightDimOptions {
   clearBeforeFajrMin?: number;
 }
 
+/** Whole minutes since local midnight — so the dim moves a step a minute, not every second. */
 function minutesOfDay(d: Date): number {
-  return d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
+  return d.getHours() * 60 + d.getMinutes();
 }
 
 /** Non-negative (a − b) on a 24h wall clock, in minutes — handles the midnight wrap. */
@@ -36,7 +38,9 @@ function cyclicDelta(a: number, b: number): number {
 /**
  * Board dim level for `now` (0..maxDim). Works in minutes-of-day so the overnight
  * window is correct whether `now` is this evening or the small hours (the API day
- * may still read "yesterday"). Returns 0 — fully bright — during the daytime.
+ * may still read "yesterday"). Returns 0 — fully bright — during the daytime. Holds
+ * steady within each minute: the board fades to each new step once a minute instead of
+ * re-dimming the whole screen every second.
  */
 export function nightDimLevel(now: Date, instants: PrayerInstant[], opts: NightDimOptions = {}): number {
   if (instants.length < 2) return 0;
@@ -85,4 +89,13 @@ export function burnInOffset(now: Date, opts: BurnInOptions = {}): { dx: number;
   const a = (2 * Math.PI * k) / n;
   // `|| 0` folds -0 into 0 so the CSS string and comparisons stay clean
   return { dx: Math.round(r * Math.cos(a)) || 0, dy: Math.round(r * 0.6 * Math.sin(a)) || 0 };
+}
+
+/**
+ * Where the faint background glows sit this hour when ambient motion is on: a ~24px loop
+ * that steps with the board's anti-burn-in shift (the other way). Never a continuous drift.
+ */
+export function glowShift(now: Date): { dx: number; dy: number } {
+  const { dx, dy } = burnInOffset(now, { radiusPx: 24 });
+  return { dx: -dx || 0, dy: -dy || 0 };
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { nightDimLevel, burnInOffset, DEFAULT_MAX_DIM } from './ambient';
+import { nightDimLevel, burnInOffset, glowShift, DEFAULT_MAX_DIM } from './ambient';
 import type { PrayerInstant } from './schedule';
 
 /** Minimal instants — nightDimLevel only reads the first adhān and last iqāmah. */
@@ -59,6 +59,13 @@ describe('nightDimLevel', () => {
   it('is a no-op without enough prayer data', () => {
     expect(nightDimLevel(at('02:00'), [])).toBe(0);
   });
+
+  it('steps once a minute — never re-dims the screen every second', () => {
+    const sec = (m: number, s: number) => new Date(2026, 5, 25, 22, m, s);
+    const step = nightDimLevel(sec(0, 0), days);
+    for (const s of [1, 15, 30, 59]) expect(nightDimLevel(sec(0, s), days)).toBe(step);
+    expect(nightDimLevel(sec(1, 0), days)).toBeGreaterThan(step); // the next step, a minute on
+  });
 });
 
 describe('burnInOffset', () => {
@@ -96,5 +103,25 @@ describe('burnInOffset', () => {
     const a = burnInOffset(at14(0), { holdMs: 10 * 60_000 });
     const b = burnInOffset(at14(10), { holdMs: 10 * 60_000 });
     expect(a).not.toEqual(b);
+  });
+});
+
+describe('glowShift', () => {
+  it('holds still within the hour and steps on the hour', () => {
+    const first = glowShift(new Date(2026, 5, 25, 14, 0, 1));
+    for (const [m, s] of [[0, 30], [17, 42], [59, 59]]) {
+      expect(glowShift(new Date(2026, 5, 25, 14, m, s))).toEqual(first);
+    }
+    expect(glowShift(new Date(2026, 5, 25, 15, 0, 0))).not.toEqual(first);
+  });
+
+  it('stays within a small loop, moving the other way to the board', () => {
+    for (let h = 0; h < 8; h++) {
+      const now = new Date(2026, 5, 25, h, 10, 0);
+      const glow = glowShift(now);
+      const board = burnInOffset(now);
+      expect(Math.hypot(glow.dx, glow.dy)).toBeLessThanOrEqual(24);
+      expect(glow.dx * board.dx + glow.dy * board.dy).toBeLessThan(0); // opposite directions
+    }
   });
 });
