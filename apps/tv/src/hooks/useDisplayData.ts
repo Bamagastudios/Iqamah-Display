@@ -26,6 +26,11 @@ function initialState(): DisplayDataState {
   return { feed: sampleFeedForToday(), source: 'sample', stale: true, lastUpdated: null, error: null };
 }
 
+/** Same feed content, ignoring `updatedAt` (the API may stamp it on every request). */
+function sameContent(a: DisplayFeed, b: DisplayFeed): boolean {
+  return JSON.stringify({ ...a, updatedAt: '' }) === JSON.stringify({ ...b, updatedAt: '' });
+}
+
 /**
  * Resilient feed state: hydrate from cache/sample (no blank paint) → fetch on mount →
  * poll every 30s → on any failure keep last-known-good and mark `stale`. Never blanks.
@@ -43,7 +48,15 @@ export function useDisplayData(pollMs = POLL_MS): DisplayDataState {
         const feed = await fetchDisplayFeed(ac.signal);
         const entry = writeCache(feed);
         if (!mounted.current) return;
-        setState({ feed, source: 'live', stale: false, lastUpdated: entry.fetchedAt, error: null });
+        // keep the same feed object when nothing changed, so the board and the slide
+        // rotation don't re-render or restart on every poll
+        setState((prev) => ({
+          feed: sameContent(prev.feed, feed) ? prev.feed : feed,
+          source: 'live',
+          stale: false,
+          lastUpdated: entry.fetchedAt,
+          error: null,
+        }));
       } catch (err) {
         if (!mounted.current || ac.signal.aborted) return;
         setState((prev) => ({ ...prev, stale: true, error: err instanceof Error ? err.message : String(err) }));

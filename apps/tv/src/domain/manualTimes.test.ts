@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { applyManualTimes, enforceMaghribOffset, addMinutesHHMM, to12h, type ManualTimes } from './manualTimes';
+import {
+  applyManualTimes,
+  enforceMaghribOffset,
+  addMinutesHHMM,
+  resolveIqamah,
+  to12h,
+  type ManualTimes,
+} from './manualTimes';
 import type { PrayerTimesResponse } from '../api/types';
 
 function base(): PrayerTimesResponse {
@@ -115,5 +122,40 @@ describe('enforceMaghribOffset', () => {
     const r = enforceMaghribOffset(base(), 5);
     expect(r.prayers[3].iqamah).toBe('20:19');
     expect(r.prayers[0].iqamah).toBe('06:00'); // Fajr untouched
+  });
+});
+
+describe('resolveIqamah (board + schedule pipeline)', () => {
+  // What tajweedusa.org shows: 6:30 / 2:00 / 5:00 / +10m / 8:45, Jummah 1:30.
+  const dato: ManualTimes = {
+    mode: 'always',
+    iqamah: { Fajr: '06:30', Dhuhr: '14:00', Asr: '17:00', Isha: '20:45' },
+    jummah: '13:30',
+  };
+
+  it('shows the DatoCMS iqāmah on a live day, with Maghrib = adhān + 10', () => {
+    const r = resolveIqamah(base(), { dato, live: true, now });
+    expect(r.prayers.map((p) => p.iqamah)).toEqual(['06:30', '14:00', '17:00', '20:24', '20:45']);
+    expect(r.prayers.map((p) => p.iqamah12)).toEqual(['6:30 AM', '2:00 PM', '5:00 PM', '8:24 PM', '8:45 PM']);
+    expect(r.jummah.iqamah12).toBe('1:30 PM');
+    expect(r.prayers[0].adhan).toBe('05:31'); // adhān untouched
+    expect(r.date).toBe('2026-06-22'); // a live day keeps its own date
+  });
+
+  it('DatoCMS wins over the manual backup when both apply', () => {
+    const manualAlways: ManualTimes = { mode: 'always', iqamah: { Fajr: '05:50' }, jummah: '13:15' };
+    const r = resolveIqamah(base(), { manual: manualAlways, dato, live: true, now });
+    expect(r.prayers[0].iqamah).toBe('06:30');
+    expect(r.jummah.iqamah).toBe('13:30');
+  });
+
+  it('falls back to the manual backup when DatoCMS is unavailable', () => {
+    const r = resolveIqamah(base(), { manual, dato: undefined, live: false, now });
+    expect(r.prayers[0].iqamah).toBe('06:15');
+  });
+
+  it('honors a custom Maghrib offset on top of DatoCMS', () => {
+    const r = resolveIqamah(base(), { dato, maghribOffsetMin: 5, live: true, now });
+    expect(r.prayers[3].iqamah).toBe('20:19');
   });
 });

@@ -97,3 +97,19 @@ export function enforceMaghribOffset(base: PrayerTimesResponse, offsetMin = DEFA
   });
   return { ...base, prayers };
 }
+
+/**
+ * The full iqāmah pipeline, shared by the board and the upcoming-days schedule so they can
+ * never disagree: manual backup (per its mode) → DatoCMS (always, when available) →
+ * Maghrib pinned to adhān + offset. Pass `live: true` for days fetched from the API so their
+ * own date is kept.
+ */
+export function resolveIqamah(
+  base: PrayerTimesResponse,
+  opts: { manual?: ManualTimes; dato?: ManualTimes; maghribOffsetMin?: number; live: boolean; now: Date },
+): PrayerTimesResponse {
+  const at = { live: opts.live, now: opts.now };
+  const withManual = applyManualTimes(base, opts.manual, at);
+  const withDato = applyManualTimes(withManual, opts.dato, at);
+  return enforceMaghribOffset(withDato, opts.maghribOffsetMin);
+}

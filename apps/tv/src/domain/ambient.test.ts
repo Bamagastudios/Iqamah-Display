@@ -62,17 +62,39 @@ describe('nightDimLevel', () => {
 });
 
 describe('burnInOffset', () => {
+  const at14 = (m: number, s = 0) => new Date(2026, 5, 25, 14, m, s);
+
   it('stays within the configured radius', () => {
-    for (let min = 0; min < 60; min += 3) {
-      const { dx, dy } = burnInOffset(at(`0${Math.floor(min / 10)}:0${min % 10}`.slice(-5)), { radiusPx: 10 });
+    for (let h = 0; h < 24; h++) {
+      const { dx, dy } = burnInOffset(new Date(2026, 5, 25, h, 30, 0), { radiusPx: 10 });
       expect(Math.abs(dx)).toBeLessThanOrEqual(10);
       expect(Math.abs(dy)).toBeLessThanOrEqual(6);
     }
   });
 
-  it('moves over time (not a static offset)', () => {
-    const a = burnInOffset(new Date(2026, 5, 25, 0, 0, 0), { radiusPx: 10, periodMs: 480_000 });
-    const b = burnInOffset(new Date(2026, 5, 25, 0, 2, 0), { radiusPx: 10, periodMs: 480_000 });
-    expect(a.dx === b.dx && a.dy === b.dy).toBe(false);
+  it('holds perfectly still within the hour (no constant motion on screen)', () => {
+    const first = burnInOffset(at14(0, 1));
+    for (const [m, s] of [[0, 30], [4, 0], [17, 42], [30, 0], [59, 59]]) {
+      expect(burnInOffset(at14(m, s))).toEqual(first);
+    }
+  });
+
+  it('moves once per hour, cycling through distinct positions', () => {
+    const seen = new Set<string>();
+    let prev = '';
+    for (let h = 0; h < 8; h++) {
+      const { dx, dy } = burnInOffset(new Date(2026, 5, 25, h, 10, 0));
+      const key = `${dx},${dy}`;
+      expect(key).not.toBe(prev); // every hour lands somewhere new
+      seen.add(key);
+      prev = key;
+    }
+    expect(seen.size).toBe(8);
+  });
+
+  it('honors a custom hold time', () => {
+    const a = burnInOffset(at14(0), { holdMs: 10 * 60_000 });
+    const b = burnInOffset(at14(10), { holdMs: 10 * 60_000 });
+    expect(a).not.toEqual(b);
   });
 });

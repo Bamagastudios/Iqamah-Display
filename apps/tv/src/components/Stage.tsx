@@ -47,9 +47,10 @@ export function Stage({ children, offset }: { children: ReactNode; offset?: { dx
           width: BOARD_W,
           height: BOARD_H,
           flex: 'none',
+          // no transition: the hourly anti-burn-in shift snaps in one frame; animating a
+          // full-screen layer is what made the Fire TV stutter
           transform: `scale(${scale}) translate(${dx}px, ${dy}px)`,
           transformOrigin: 'center center',
-          transition: 'transform 2s ease-in-out',
         }}
       >
         {children}

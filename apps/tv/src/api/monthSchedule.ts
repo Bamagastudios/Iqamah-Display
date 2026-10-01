@@ -31,18 +31,25 @@ export function monthDayFromResponse(date: string, pt: PrayerTimesResponse): Mon
   return { date, day: d, dow: DOW[new Date(y, m - 1, d).getDay()], isFriday: !!pt.isFriday, iqamah };
 }
 
+/** One fetched day — its date and the raw response; iqāmah rules are applied at render. */
+export interface ScheduleDay {
+  date: string; // "YYYY-MM-DD"
+  pt: PrayerTimesResponse;
+}
+
 /**
- * Iqamah times for the next `days` days from today — one request per day to the
- * real /api/prayer-times?date=… (proxied same-origin). Resilient: days that fail
- * are dropped rather than failing the whole window.
+ * Prayer times for the next `days` days from today — one request per day to the
+ * real /api/prayer-times?date=… (proxied same-origin). Returned raw so the caller can run
+ * the same iqāmah rules as the board (DatoCMS / manual / Maghrib offset). Resilient: days
+ * that fail are dropped rather than failing the whole window.
  */
-export async function fetchSchedule(ref: Date, days: number, signal?: AbortSignal): Promise<MonthDay[]> {
+export async function fetchSchedule(ref: Date, days: number, signal?: AbortSignal): Promise<ScheduleDay[]> {
   const base = prayerApiUrl();
   const settled = await Promise.allSettled(
     scheduleDates(ref, days).map(async (date) => {
       const res = await fetch(`${base}?date=${date}`, { signal, headers: { accept: 'application/json' } });
       if (!res.ok) throw new Error(`prayer-times ${date} -> ${res.status}`);
-      return monthDayFromResponse(date, (await res.json()) as PrayerTimesResponse);
+      return { date, pt: (await res.json()) as PrayerTimesResponse };
     }),
   );
   return settled.flatMap((s) => (s.status === 'fulfilled' ? [s.value] : []));

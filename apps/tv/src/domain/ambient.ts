@@ -3,8 +3,8 @@
  *
  *  - nightDimLevel: how dark to make the board overnight (the masjid is typically
  *    empty between Isha and Fajr), eased in after Isha and out before Fajr.
- *  - burnInOffset: a slow sub-pixel drift of the whole board to avoid the static
- *    layout etching into a 24/7 panel (LCD image-persistence / OLED burn-in).
+ *  - burnInOffset: a few-pixel shift of the whole board once an hour, to keep the static
+ *    layout from etching into a 24/7 panel (LCD image-persistence / OLED burn-in).
  *
  * Both take an explicit `now` (and prayer instants) — no Date.now(), no module state.
  */
@@ -62,19 +62,27 @@ export function nightDimLevel(now: Date, instants: PrayerInstant[], opts: NightD
 }
 
 export interface BurnInOptions {
-  /** Drift radius in board pixels. */
+  /** Shift radius in board pixels. */
   radiusPx?: number;
-  /** Time for one full drift loop. */
-  periodMs?: number;
+  /** How long the board holds each position (default one hour). */
+  holdMs?: number;
+  /** Distinct positions in one loop (default 8). */
+  positions?: number;
 }
 
 /**
- * A slow Lissajous drift of the whole board, so no pixel shows the same content
- * forever. Tiny (a few px) and gradual — invisible to viewers, kind to the panel.
+ * A small shift of the whole board once an hour, cycling through a few positions on an
+ * ellipse, so no pixel shows the same content forever. The board holds perfectly still in
+ * between — a continuous drift re-composites the entire screen every few seconds, which a
+ * Fire TV shows as a visible stutter. Moves land on the local hour.
  */
 export function burnInOffset(now: Date, opts: BurnInOptions = {}): { dx: number; dy: number } {
-  const r = opts.radiusPx ?? 10;
-  const period = Math.max(1000, opts.periodMs ?? 8 * 60_000);
-  const a = (2 * Math.PI * (now.getTime() % period)) / period;
-  return { dx: Math.round(r * Math.cos(a)), dy: Math.round(r * 0.6 * Math.sin(2 * a)) };
+  const r = opts.radiusPx ?? 8;
+  const hold = Math.max(60_000, opts.holdMs ?? 60 * 60_000);
+  const n = Math.max(2, Math.round(opts.positions ?? 8));
+  const wallClockMs = now.getTime() - now.getTimezoneOffset() * 60_000;
+  const k = Math.floor(wallClockMs / hold) % n;
+  const a = (2 * Math.PI * k) / n;
+  // `|| 0` folds -0 into 0 so the CSS string and comparisons stay clean
+  return { dx: Math.round(r * Math.cos(a)) || 0, dy: Math.round(r * 0.6 * Math.sin(a)) || 0 };
 }

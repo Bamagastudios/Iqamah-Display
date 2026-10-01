@@ -1,25 +1,26 @@
 import { useEffect, useState } from 'react';
-import { fetchSchedule, type MonthDay } from '../api/monthSchedule';
+import { fetchSchedule, type ScheduleDay } from '../api/monthSchedule';
 
-const KEY = 'masjidtv.schedule.v1';
+// v2 caches raw per-day responses (v1 held pre-baked rows) — bumped so old data is ignored.
+const KEY = 'masjidtv.schedule.v2';
 
 function dayStamp(d: Date): string {
   const p = (n: number) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
-function readCache(key: string): MonthDay[] | null {
+function readCache(key: string): ScheduleDay[] | null {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as { key: string; days: MonthDay[] };
-    return parsed.key === key && Array.isArray(parsed.days) ? parsed.days : null;
+    const parsed = JSON.parse(raw) as { key: string; days: ScheduleDay[] };
+    return parsed.key === key && Array.isArray(parsed.days) && parsed.days.every((d) => d && d.pt) ? parsed.days : null;
   } catch {
     return null;
   }
 }
 
-function writeCache(key: string, days: MonthDay[]): void {
+function writeCache(key: string, days: ScheduleDay[]): void {
   try {
     localStorage.setItem(KEY, JSON.stringify({ key, days }));
   } catch {
@@ -28,13 +29,14 @@ function writeCache(key: string, days: MonthDay[]): void {
 }
 
 /**
- * The next `days` days of iqamah times (a rolling window starting today). Hydrates
- * from cache instantly, fetches in the background, and refetches when the day rolls
- * over. Returns [] until data is available (callers skip the schedule when empty).
+ * The next `days` days of prayer times (a rolling window starting today), raw — the caller
+ * applies the iqāmah rules so the schedule always matches the board. Hydrates from cache
+ * instantly, fetches in the background, and refetches when the day rolls over. Returns []
+ * until data is available (callers skip the schedule when empty).
  */
-export function useSchedule(now: Date, days = 14): MonthDay[] {
+export function useSchedule(now: Date, days = 14): ScheduleDay[] {
   const key = `${dayStamp(now)}:${days}`;
-  const [rows, setRows] = useState<MonthDay[]>(() => readCache(key) ?? []);
+  const [rows, setRows] = useState<ScheduleDay[]>(() => readCache(key) ?? []);
 
   useEffect(() => {
     let active = true;
