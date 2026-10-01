@@ -2,7 +2,7 @@ import { type CSSProperties } from 'react';
 import { color, font } from '../theme/tokens';
 import type { PrayerTimesResponse } from '../api/types';
 import { buildPrayerInstants, countdown, currentState, nextIqamah } from '../domain/schedule';
-import { nightDimLevel } from '../domain/ambient';
+import { glowShift, nightDimLevel } from '../domain/ambient';
 import { formatClock, padCountdown } from '../domain/format';
 import { arabicFor, buildDisplayRows, formatGregorian } from '../domain/display';
 import type { Slide } from '../domain/content';
@@ -26,7 +26,7 @@ interface DisplayProps {
   announcementIndex?: number;
   /** Donate link → rendered as a scannable QR in the side panel. */
   donateUrl?: string;
-  /** Faint ambient motion; off → static gradient (reduced motion / low power). */
+  /** Background glows step to a new spot once an hour; off → they stay put. Never animated. */
   ambientMotion?: boolean;
   /** High-visibility banner (e.g. "Janāzah after Dhuhr today"). */
   alertEnabled?: boolean;
@@ -94,7 +94,7 @@ export function Display({
 
   return (
     <div style={page}>
-      <AmbientBackground enabled={ambientMotion} />
+      <AmbientBackground shift={ambientMotion ? glowShift(now) : undefined} />
 
       <div style={content}>
         {showAlert && (
